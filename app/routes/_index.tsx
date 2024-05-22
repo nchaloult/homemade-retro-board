@@ -14,29 +14,29 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <main className="h-svh flex flex-col space-y-2 justify-center items-center">
-      <div className="grid grid-cols-2 gap-2 p-4 rounded-xl bg-white">
+    <main className="h-svh flex flex-col space-y-4 justify-center items-center">
+      <div className="grid grid-cols-2 gap-4 p-8 rounded-xl bg-white">
         <Form className="flex flex-col space-y-2">
           <input
             type="text"
             placeholder="Board ID"
-            className="p-2 rounded-lg border border-stone-200 bg-stone-100"
+            className="p-2 rounded-lg font-semibold border-2 border-stone-200 bg-stone-100"
           />
           <input
             type="text"
             placeholder="Display name"
-            className="p-2 rounded-lg border border-stone-200 bg-stone-100"
+            className="p-2 rounded-lg font-semibold border-2 border-stone-200 bg-stone-100"
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-purple-900 text-white hover:bg-purple-800 focus:bg-purple-800 transition"
+            className="px-4 py-2 rounded-lg bg-purple-900 text-white font-semibold border-2 border-b-4 border-purple-950 hover:bg-purple-800 focus:bg-purple-800 transition-all"
           >
             Join Board
           </button>
         </Form>
         <Link
           to="boards/new"
-          className="flex justify-center items-center px-4 py-2 rounded-lg bg-purple-700 text-white hover:bg-purple-600 focus:bg-purple-600 transition"
+          className="flex justify-center items-center px-4 py-2 rounded-lg bg-stone-200 font-semibold text-stone-900 border-2 border-b-4 border-stone-300 hover:bg-stone-100 focus:bg-stone-100 transition"
         >
           Create New Board
         </Link>
