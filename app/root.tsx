@@ -10,7 +10,7 @@ import {
 import stylesheet from "~/tailwind.css?url";
 
 export const links: LinksFunction = () => [
-  {rel: "stylesheet", href: stylesheet},
+  { rel: "stylesheet", href: stylesheet },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -22,7 +22,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-stone-100">
         {children}
         <ScrollRestoration />
         <Scripts />
