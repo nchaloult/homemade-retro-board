@@ -14,6 +14,7 @@
     "@remix-run/node": "^2.9.2",
     "@remix-run/react": "^2.9.2",
     "@remix-run/serve": "^2.9.2",
+    "@types/better-sqlite3": "^7.6.10",
     "better-sqlite3": "^10.0.0",
     "drizzle-orm": "^0.30.10",
     "isbot": "^4.4.0",
