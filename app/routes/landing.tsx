@@ -23,23 +23,23 @@ export default function Index() {
             placeholder="Board ID"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
-            className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
+            className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
           />
           <input
             type="text"
             placeholder="Display name"
-            className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
+            className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-b-4 border-purple-950 hover:bg-purple-700 focus:outline-none focus:bg-purple-700 transition-all"
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition-all"
           >
             Join Board
           </button>
         </Form>
         <Link
           to="boards/create"
-          className="flex justify-center items-center px-4 py-2 rounded-lg bg-stone-200 font-semibold text-stone-900 border-2 border-b-4 border-stone-300 hover:bg-stone-100 focus:outline-none focus:border-stone-400 focus:bg-stone-100 transition"
+          className="flex justify-center items-center px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition-all"
         >
           Create New Board
         </Link>
