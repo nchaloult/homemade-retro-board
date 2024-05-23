@@ -3,7 +3,9 @@ import { db } from "~/drizzle/config.server";
 import { boards, columns, entries } from "~/drizzle/schema.server";
 
 export async function createBoard(displayName: string) {
-  return await db.insert(boards).values({ externalId: "testing", displayName });
+  const externalId = "testing";
+  await db.insert(boards).values({ externalId, displayName });
+  return externalId;
 }
 
 export async function getAllBoards() {
