@@ -55,9 +55,9 @@ function BoardCard(props: BoardCardProps) {
     <Link
       key={props.key}
       to={`${props.externalId}`}
-      className={`p-4 rounded-xl bg-white border-2 border-stone-200 hover:border-b-[6px] hover:scale-[105%] ${
+      className={`p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[rgb(231_229_228)_0_4px] outline-none hover:scale-[105%] ${
         isRotatedClockwise ? "hover:rotate-1" : "hover:-rotate-1"
-      } focus:outline-none focus:border-stone-400 transition-all`}
+      } focus:border-stone-400 transition-all`}
       onMouseEnter={() => randomizeRotationDirection()}
     >
       <h1 className="font-bold text-2xl mb-4">{props.displayName}</h1>
