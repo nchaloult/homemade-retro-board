@@ -1,6 +1,18 @@
-import { Link, Outlet } from "@remix-run/react";
+import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { displayNameCookie } from "~/displayNameCookie.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await displayNameCookie.parse(cookieHeader)) || {};
+  const displayName = cookie.displayName || undefined;
+
+  return json({ displayName });
+}
 
 export default function Layout() {
+  const { displayName } = useLoaderData<typeof loader>();
+
   return (
     <>
       <div className="px-8">
@@ -12,7 +24,7 @@ export default function Layout() {
             Homemade Retro Board
           </Link>
           <span className="text-sm text-stone-400 font-bold">
-            Display name goes here
+            {displayName || "Display name not set."}
           </span>
         </nav>
       </div>

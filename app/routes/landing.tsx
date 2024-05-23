@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
+import { displayNameCookie } from "~/displayNameCookie.server";
 import { doesBoardExist } from "~/models/boards.server";
 
 export const meta: MetaFunction = () => {
@@ -38,9 +39,14 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ errors, displayName });
   }
 
-  // TODO: Store user's display name in local storage.
+  // Store the provided display name in local storage.
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await displayNameCookie.parse(cookieHeader)) || {};
+  cookie.displayName = displayName;
 
-  return redirect(`boards/${externalId}`);
+  return redirect(`boards/${externalId}`, {
+    headers: { "Set-Cookie": await displayNameCookie.serialize(cookie) },
+  });
 }
 
 export default function Landing() {
