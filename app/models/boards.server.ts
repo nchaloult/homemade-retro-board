@@ -1,9 +1,10 @@
 import { asc, eq, isNull } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { db } from "~/drizzle/config.server";
 import { boards, columns, entries } from "~/drizzle/schema.server";
 
 export async function createBoard(displayName: string) {
-  const externalId = "testing";
+  const externalId = nanoid();
   await db.insert(boards).values({ externalId, displayName });
   return externalId;
 }
