@@ -1,10 +1,16 @@
 import { asc, eq, isNull } from "drizzle-orm";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
+import nanoidDictionaryPkg from "nanoid-dictionary";
 import { db } from "~/drizzle/config.server";
 import { boards, columns, entries } from "~/drizzle/schema.server";
 
+// Necessary because of CommonJS package compatibility with Vite.
+const { nolookalikesSafe } = nanoidDictionaryPkg;
+
+const generateNanoId = customAlphabet(nolookalikesSafe, 10);
+
 export async function createBoard(name: string) {
-  const externalId = nanoid();
+  const externalId = generateNanoId();
   await db.insert(boards).values({ externalId, name });
   return externalId;
 }
