@@ -1,4 +1,5 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
@@ -12,14 +13,39 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Index() {
+export async function action({ request }: ActionFunctionArgs) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const errors: any = {};
+
+  const formData = await request.formData();
+
+  const externalId = formData.get("externalId");
+  if (externalId === null || externalId === "") {
+    errors.externalId = "Board ID must not be empty";
+  }
+  const displayName = formData.get("displayName");
+  if (displayName === null || displayName === "") {
+    errors.displayName = "Display name must not be empty";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return json({ errors });
+  }
+
+  // TODO: Store user's display name in local storage.
+
+  return redirect(`boards/${externalId}`);
+}
+
+export default function Landing() {
   return (
     <main className="h-svh flex flex-col space-y-8 justify-center items-center">
       <h1 className="font-bold text-4xl">Homemade Retro Platform</h1>
       <div className="grid grid-cols-2 gap-4">
-        <Form className="flex flex-col space-y-2">
+        <Form method="post" className="flex flex-col space-y-2">
           <input
             type="text"
+            name="externalId"
             placeholder="Board ID"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
@@ -27,6 +53,7 @@ export default function Index() {
           />
           <input
             type="text"
+            name="displayName"
             placeholder="Display name"
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
           />
