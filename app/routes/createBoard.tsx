@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 import { createBoard } from "~/models/boards.server";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -8,13 +8,13 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  const displayName = formData.get("displayName");
+  const displayName = String(formData.get("displayName"));
   if (displayName === null || displayName === "") {
-    errors.displayName = "Display name must not be empty";
+    errors.displayName = "Display name must not be empty.";
   }
 
   if (Object.keys(errors).length > 0) {
-    return json({ errors });
+    return json({ errors, displayName });
   }
 
   const externalId = await createBoard(String(displayName)); // TODO: Revisit type casting here.
@@ -22,6 +22,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function CreateBoard() {
+  const actionData = useActionData<typeof action>();
+
   return (
     <div className="h-svh flex flex-col justify-center items-center space-y-8">
       <header>
@@ -29,9 +31,16 @@ export default function CreateBoard() {
       </header>
       <main className="w-1/3 min-w-80">
         <Form method="post" className="flex flex-col space-y-2">
+          {actionData?.errors.displayName ? (
+            <label htmlFor="displayName" className="ml-1 text-sm text-red-500">
+              {actionData.errors.displayName}
+            </label>
+          ) : null}
           <input
             type="text"
+            id="displayName"
             name="displayName"
+            defaultValue={actionData?.displayName}
             placeholder="Display name"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
