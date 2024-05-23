@@ -20,7 +20,7 @@ export default function Boards() {
         {boards.length > 0 ? (
           boards.map((board) => (
             <BoardCard
-              key={board.id}
+              key={board.externalId}
               externalId={board.externalId}
               displayName={board.displayName}
               createdAt={board.createdAt}

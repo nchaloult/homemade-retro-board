@@ -5,7 +5,6 @@ import { boards } from "~/drizzle/schema.server";
 export async function getAllBoards() {
   return await db
     .select({
-      id: boards.id,
       externalId: boards.externalId,
       displayName: boards.displayName,
       createdAt: boards.createdAt,
