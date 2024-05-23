@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `boards_external_id_unique` ON `boards` (`external_id`);

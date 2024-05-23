@@ -8,16 +8,16 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  const displayName = String(formData.get("displayName"));
-  if (displayName === null || displayName === "") {
-    errors.displayName = "Display name must not be empty.";
+  const name = String(formData.get("name"));
+  if (name === null || name === "") {
+    errors.name = "Display name must not be empty.";
   }
 
   if (Object.keys(errors).length > 0) {
-    return json({ errors, displayName });
+    return json({ errors, name });
   }
 
-  const externalId = await createBoard(String(displayName)); // TODO: Revisit type casting here.
+  const externalId = await createBoard(String(name)); // TODO: Revisit type casting here.
   return redirect(`/boards/${externalId}`);
 }
 
@@ -31,17 +31,17 @@ export default function CreateBoard() {
       </header>
       <main className="w-1/3 min-w-80">
         <Form method="post" className="flex flex-col space-y-2">
-          {actionData?.errors.displayName ? (
-            <label htmlFor="displayName" className="ml-1 text-sm text-red-500">
-              {actionData.errors.displayName}
+          {actionData?.errors.name ? (
+            <label htmlFor="name" className="ml-1 text-sm text-red-500">
+              {actionData.errors.name}
             </label>
           ) : null}
           <input
             type="text"
-            id="displayName"
-            name="displayName"
-            defaultValue={actionData?.displayName}
-            placeholder="Display name"
+            id="name"
+            name="name"
+            defaultValue={actionData?.name}
+            placeholder="Name"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"

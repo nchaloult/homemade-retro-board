@@ -22,7 +22,7 @@ export default function Boards() {
             <BoardCard
               key={board.externalId}
               externalId={board.externalId}
-              displayName={board.displayName}
+              name={board.name}
               createdAt={board.createdAt}
               updatedAt={board.updatedAt}
             />
@@ -37,7 +37,7 @@ export default function Boards() {
 
 interface BoardCardProps {
   externalId: string;
-  displayName: string;
+  name: string;
   createdAt: string;
   updatedAt?: string | null;
 }
@@ -58,7 +58,7 @@ function BoardCard(props: BoardCardProps) {
       } focus:border-stone-400 transition`}
       onMouseEnter={() => randomizeRotationDirection()}
     >
-      <h1 className="font-bold text-2xl mb-4">{props.displayName}</h1>
+      <h1 className="font-bold text-2xl mb-4">{props.name}</h1>
       <p className="text-sm text-stone-400 italic">
         Created on {new Date(props.createdAt).toLocaleString()}
       </p>
