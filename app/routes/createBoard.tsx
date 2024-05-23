@@ -33,6 +33,8 @@ export default function CreateBoard() {
             type="text"
             name="displayName"
             placeholder="Display name"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
           />
           <button

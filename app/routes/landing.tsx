@@ -21,6 +21,8 @@ export default function Index() {
           <input
             type="text"
             placeholder="Board ID"
+            // eslint-disable-next-line jsx-a11y/no-autofocus
+            autoFocus
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
           />
           <input
