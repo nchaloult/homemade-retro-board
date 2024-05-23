@@ -16,7 +16,7 @@ export default function Boards() {
       <header>
         <h1 className="font-bold text-4xl mb-8">Previous Boards</h1>
       </header>
-      <main className="grid grid-cols-3 grid-rows-3">
+      <main className="grid grid-cols-3 grid-rows-3 gap-4">
         {boards.length > 0 ? (
           boards.map((board) => (
             <BoardCard
