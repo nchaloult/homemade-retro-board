@@ -57,7 +57,7 @@ function BoardCard(props: BoardCardProps) {
       to={`${props.externalId}`}
       className={`p-4 rounded-xl bg-white border-2 border-stone-200 hover:border-b-[6px] hover:scale-[105%] ${
         isRotatedClockwise ? "hover:rotate-1" : "hover:-rotate-1"
-      } transition-all`}
+      } focus:outline-none focus:border-stone-400 transition-all`}
       onMouseEnter={() => randomizeRotationDirection()}
     >
       <h1 className="font-bold text-2xl mb-4">{props.displayName}</h1>
