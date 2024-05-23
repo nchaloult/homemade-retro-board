@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b8ffa38d-b7cf-45eb-a524-0176cbc0c8ca",
+  "id": "1260ec08-c223-45be-8fc5-c52d13231458",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "boards": {
@@ -21,8 +21,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "display_name": {
-          "name": "display_name",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -52,7 +52,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "boards_external_id_unique": {
+          "name": "boards_external_id_unique",
+          "columns": [
+            "external_id"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}

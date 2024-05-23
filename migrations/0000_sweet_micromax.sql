@@ -1,7 +1,7 @@
 CREATE TABLE `boards` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`external_id` text NOT NULL,
-	`display_name` text NOT NULL,
+	`name` text NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()),
 	`deleted_at` integer
@@ -25,3 +25,5 @@ CREATE TABLE `entries` (
 	FOREIGN KEY (`board_id`) REFERENCES `boards`(`id`) ON UPDATE cascade ON DELETE cascade,
 	FOREIGN KEY (`column_id`) REFERENCES `columns`(`id`) ON UPDATE cascade ON DELETE cascade
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX `boards_external_id_unique` ON `boards` (`external_id`);

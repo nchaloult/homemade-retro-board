@@ -3,9 +3,9 @@ import { nanoid } from "nanoid";
 import { db } from "~/drizzle/config.server";
 import { boards, columns, entries } from "~/drizzle/schema.server";
 
-export async function createBoard(displayName: string) {
+export async function createBoard(name: string) {
   const externalId = nanoid();
-  await db.insert(boards).values({ externalId, displayName });
+  await db.insert(boards).values({ externalId, name });
   return externalId;
 }
 
@@ -13,7 +13,7 @@ export async function getAllBoards() {
   return await db
     .select({
       externalId: boards.externalId,
-      displayName: boards.displayName,
+      name: boards.name,
       createdAt: boards.createdAt,
       updatedAt: boards.updatedAt,
     })
@@ -34,7 +34,7 @@ export async function getBoard(externalId: string) {
   // TODO: Look for ways to reduce the number of queries we need to make?
 
   const boardsArray = await db
-    .select({ id: boards.id, displayName: boards.displayName })
+    .select({ id: boards.id, name: boards.name })
     .from(boards)
     .where(eq(boards.externalId, externalId))
     .limit(1);
@@ -43,7 +43,7 @@ export async function getBoard(externalId: string) {
   }
   // Will always only contain 1 row because of the `LIMIT 1` clause attached to
   // the query above.
-  const { id, displayName } = boardsArray[0];
+  const { id, name } = boardsArray[0];
 
   const entriesArray = await db
     .select({
@@ -58,5 +58,5 @@ export async function getBoard(externalId: string) {
     .groupBy(entries.columnId)
     .orderBy(asc(columns.order), asc(entries.order));
 
-  return { displayName, entries: entriesArray };
+  return { name, entries: entriesArray };
 }

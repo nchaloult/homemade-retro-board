@@ -8,18 +8,18 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Board ID not found", { status: 400 });
   }
 
-  const { displayName, entries } = await getBoard(externalId);
+  const { name, entries } = await getBoard(externalId);
 
-  return json({ displayName, entries });
+  return json({ name, entries });
 }
 
 export default function Board() {
-  const { displayName, entries } = useLoaderData<typeof loader>();
+  const { name, entries } = useLoaderData<typeof loader>();
 
   return (
     <div className="p-12">
       <header className="mb-8">
-        <h1 className="font-bold text-4xl">{displayName}</h1>
+        <h1 className="font-bold text-4xl">{name}</h1>
       </header>
       <main>
         <p>{JSON.stringify(entries)}</p>
