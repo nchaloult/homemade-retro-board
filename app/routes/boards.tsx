@@ -13,8 +13,8 @@ export default function Boards() {
 
   return (
     <div className="p-12">
-      <header>
-        <h1 className="font-bold text-4xl mb-8">Previous Boards</h1>
+      <header className="mb-8">
+        <h1 className="font-bold text-4xl">Previous Boards</h1>
       </header>
       <main className="grid grid-cols-3 grid-rows-3 gap-4">
         {boards.length > 0 ? (
