@@ -36,7 +36,6 @@ export default function Boards() {
 }
 
 interface BoardCardProps {
-  key: number;
   externalId: string;
   displayName: string;
   createdAt: string;
@@ -53,7 +52,6 @@ function BoardCard(props: BoardCardProps) {
 
   return (
     <Link
-      key={props.key}
       to={`${props.externalId}`}
       className={`p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[rgb(231_229_228)_0_4px] outline-none hover:scale-[105%] ${
         isRotatedClockwise ? "hover:rotate-1" : "hover:-rotate-1"
