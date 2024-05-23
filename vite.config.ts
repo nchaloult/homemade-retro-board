@@ -12,6 +12,7 @@ export default defineConfig({
         return defineRoutes((route) => {
           route("/", "routes/landing.tsx");
           route("boards", "routes/boards.tsx");
+          route("boards/create", "routes/createBoard.tsx");
         });
       },
     }),
