@@ -14,3 +14,7 @@ export async function getAllBoards() {
     .from(boards)
     .where(isNull(boards.deletedAt));
 }
+
+export async function createBoard(displayName: string) {
+  return await db.insert(boards).values({ externalId: "testing", displayName });
+}
