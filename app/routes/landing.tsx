@@ -56,7 +56,7 @@ export default function Landing() {
     <main className="h-svh flex flex-col space-y-8 justify-center items-center">
       <h1 className="font-bold text-4xl">Homemade Retro Platform</h1>
       <div className="grid grid-cols-2 gap-4">
-        <Form method="post" className="flex flex-col space-y-2 w-64">
+        <Form method="post" className="flex flex-col space-y-2 w-56">
           {actionData?.errors.externalId ? (
             <label htmlFor="externalId" className="ml-1 text-sm text-red-500">
               {actionData.errors.externalId}
