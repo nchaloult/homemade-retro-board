@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
+import { doesBoardExist } from "~/models/boards.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -19,17 +20,22 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  const externalId = formData.get("externalId");
+  const externalId = String(formData.get("externalId"));
   if (externalId === null || externalId === "") {
-    errors.externalId = "Board ID must not be empty";
+    errors.externalId = "Board ID must not be empty.";
   }
-  const displayName = formData.get("displayName");
+  const displayName = String(formData.get("displayName"));
   if (displayName === null || displayName === "") {
-    errors.displayName = "Display name must not be empty";
+    errors.displayName = "Display name must not be empty.";
   }
 
   if (Object.keys(errors).length > 0) {
-    return json({ errors });
+    return json({ errors, displayName });
+  }
+
+  if (!(await doesBoardExist(externalId))) {
+    errors.externalId = "Board does not exist.";
+    return json({ errors, displayName });
   }
 
   // TODO: Store user's display name in local storage.
@@ -38,22 +44,37 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Landing() {
+  const actionData = useActionData<typeof action>();
+
   return (
     <main className="h-svh flex flex-col space-y-8 justify-center items-center">
       <h1 className="font-bold text-4xl">Homemade Retro Platform</h1>
       <div className="grid grid-cols-2 gap-4">
         <Form method="post" className="flex flex-col space-y-2 w-64">
+          {actionData?.errors.externalId ? (
+            <label htmlFor="externalId" className="ml-1 text-sm text-red-500">
+              {actionData.errors.externalId}
+            </label>
+          ) : null}
           <input
             type="text"
+            id="externalId"
             name="externalId"
             placeholder="Board ID"
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
           />
+          {actionData?.errors.displayName ? (
+            <label htmlFor="displayName" className="ml-1 text-sm text-red-500">
+              {actionData.errors.displayName}
+            </label>
+          ) : null}
           <input
             type="text"
+            id="displayName"
             name="displayName"
+            defaultValue={actionData?.displayName}
             placeholder="Display name"
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
           />
