@@ -12,11 +12,11 @@ export default function Boards() {
   const { boards } = useLoaderData<typeof loader>();
 
   return (
-    <div className="p-12">
+    <div className="px-12 pb-12 pt-8">
       <header className="mb-8">
         <h1 className="font-bold text-4xl">Previous Boards</h1>
       </header>
-      <main className="grid grid-cols-3 grid-rows-3 gap-4">
+      <main className="grid grid-cols-3 gap-4">
         {boards.length > 0 ? (
           boards.map((board) => (
             <BoardCard
