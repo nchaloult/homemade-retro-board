@@ -19,11 +19,13 @@
     "drizzle-orm": "^0.30.10",
     "isbot": "^4.4.0",
     "nanoid": "^5.0.7",
+    "nanoid-dictionary": "^4.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.9.2",
+    "@types/nanoid-dictionary": "^4.2.3",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
