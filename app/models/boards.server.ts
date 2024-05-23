@@ -21,6 +21,15 @@ export async function getAllBoards() {
     .where(isNull(boards.deletedAt));
 }
 
+export async function doesBoardExist(externalId: string) {
+  const resultSet = await db
+    .select({ id: boards.id })
+    .from(boards)
+    .where(eq(boards.externalId, externalId));
+
+  return resultSet.length > 0;
+}
+
 export async function getBoard(externalId: string) {
   // TODO: Look for ways to reduce the number of queries we need to make?
 
