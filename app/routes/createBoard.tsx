@@ -23,21 +23,26 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function CreateBoard() {
   return (
-    <main className="h-svh flex flex-col justify-center items-center">
-      <Form method="post" className="w-1/3 min-w-80 flex flex-col space-y-2">
-        <input
-          type="text"
-          name="displayName"
-          placeholder="Display name"
-          className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-b-4 border-purple-950 hover:bg-purple-700 focus:outline-none focus:bg-purple-700 transition-all"
-        >
-          Create
-        </button>
-      </Form>
-    </main>
+    <div className="h-svh flex flex-col justify-center items-center space-y-8">
+      <header>
+        <h1 className="text-4xl font-bold">Create New Board</h1>
+      </header>
+      <main className="w-1/3 min-w-80">
+        <Form method="post" className="flex flex-col space-y-2">
+          <input
+            type="text"
+            name="displayName"
+            placeholder="Display name"
+            className="p-2 rounded-lg font-semibold border-2 border-stone-200 focus:outline-none focus:border-stone-400 transition"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-b-4 border-purple-950 hover:bg-purple-700 focus:outline-none focus:bg-purple-700 transition-all"
+          >
+            Create
+          </button>
+        </Form>
+      </main>
+    </div>
   );
 }
