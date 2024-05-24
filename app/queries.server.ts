@@ -121,3 +121,10 @@ export async function upvoteEntry(id: number) {
     .set({ upvotes: sql`${entries.upvotes} + 1` })
     .where(eq(entries.id, id));
 }
+
+export async function downvoteEntry(id: number) {
+  await db
+    .update(entries)
+    .set({ upvotes: sql`${entries.upvotes} - 1` })
+    .where(eq(entries.id, id));
+}
