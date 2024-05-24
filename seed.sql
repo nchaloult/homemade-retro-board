@@ -29,6 +29,13 @@ INSERT INTO entries (content, author_display_name, `order`, board_id, column_id)
     1
 );
 INSERT INTO entries (content, author_display_name, `order`, board_id, column_id) VALUES (
+    "And one more piece of feedback from Anonymoose",
+    "anonymoose",
+    0.0,
+    1,
+    3
+);
+INSERT INTO entries (content, author_display_name, `order`, board_id, column_id) VALUES (
     "The quick brown fox jumps over the lazy dog",
     "anonymoose",
     1.0,
@@ -41,12 +48,4 @@ INSERT INTO entries (content, author_display_name, `order`, board_id, column_id)
     2.0,
     1,
     1
-);
-
-INSERT INTO entries (content, author_display_name, `order`, board_id, column_id) VALUES (
-    "And one more piece of feedback from Anonymoose",
-    "anonymoose",
-    0.0,
-    1,
-    3
 );

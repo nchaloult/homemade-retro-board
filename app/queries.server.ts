@@ -58,11 +58,12 @@ export async function getBoard(externalId: string) {
       authorDisplayName: entries.authorDisplayName,
       upvotes: entries.upvotes,
       order: entries.order,
+      columnId: entries.columnId,
+      columnName: columns.name,
     })
     .from(entries)
     .leftJoin(columns, eq(entries.columnId, columns.id))
     .where(eq(entries.boardId, id))
-    .groupBy(entries.columnId)
     .orderBy(asc(columns.order), asc(entries.order));
 
   return { name, entries: entriesArray };
