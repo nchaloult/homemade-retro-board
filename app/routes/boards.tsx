@@ -1,7 +1,7 @@
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import { getAllBoards } from "~/models/boards.server";
+import { getAllBoards } from "~/queries.server";
 
 export async function loader() {
   const boards = await getAllBoards();

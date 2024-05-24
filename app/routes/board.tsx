@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getBoard } from "~/models/boards.server";
+import { getBoard } from "~/queries.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const externalId = params.externalId;

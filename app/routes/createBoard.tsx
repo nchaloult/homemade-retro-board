@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import { createBoard } from "~/models/boards.server";
+import { createBoard } from "~/queries.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

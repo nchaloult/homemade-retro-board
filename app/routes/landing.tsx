@@ -2,7 +2,7 @@ import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { displayNameCookie } from "~/displayNameCookie.server";
-import { doesBoardExist } from "~/models/boards.server";
+import { doesBoardExist } from "~/queries.server";
 
 export const meta: MetaFunction = () => {
   return [
