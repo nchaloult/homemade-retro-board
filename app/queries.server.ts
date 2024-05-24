@@ -1,4 +1,4 @@
-import { asc, eq, isNull } from "drizzle-orm";
+import { asc, eq, isNull, sql } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
 import nanoidDictionaryPkg from "nanoid-dictionary";
 import { db } from "~/drizzle/config.server";
@@ -113,4 +113,11 @@ export async function getBoard(externalId: string) {
   finalEntriesList.push(curColumn);
 
   return { name, entries: finalEntriesList };
+}
+
+export async function upvoteEntry(id: number) {
+  await db
+    .update(entries)
+    .set({ upvotes: sql`${entries.upvotes} + 1` })
+    .where(eq(entries.id, id));
 }
