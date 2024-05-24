@@ -18,8 +18,9 @@ CREATE TABLE `columns` (
 CREATE TABLE `entries` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`content` text NOT NULL,
-	`order` real DEFAULT 0 NOT NULL,
+	`author_display_name` text NOT NULL,
 	`upvotes` integer DEFAULT 0 NOT NULL,
+	`order` real DEFAULT 0 NOT NULL,
 	`board_id` integer,
 	`column_id` integer,
 	FOREIGN KEY (`board_id`) REFERENCES `boards`(`id`) ON UPDATE cascade ON DELETE cascade,
