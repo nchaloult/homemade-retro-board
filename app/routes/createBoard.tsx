@@ -17,7 +17,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ errors, name });
   }
 
-  const externalId = await createBoard(String(name)); // TODO: Revisit type casting here.
+  const externalId = await createBoard(name);
   return redirect(`/boards/${externalId}`);
 }
 
