@@ -105,10 +105,10 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
           <input type="hidden" name="entryId" value={id} />
           <button
             type="submit"
-            className={`flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full text-stone-400 outline-none hover:bg-stone-200 focus:bg-stone-200`}
+            className={`flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full text-purple-800 outline-none hover:bg-stone-200 focus:bg-stone-200`}
           >
             <UpArrowIcon />
-            <span className="text-stone-400">{upvotes}</span>
+            <span>{upvotes}</span>
           </button>
         </fetcher.Form>
       </div>
