@@ -1,8 +1,8 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { PlusIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
-import { getBoard } from "~/queries.server";
+import { getBoard, upvoteEntry } from "~/queries.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const externalId = params.externalId;
@@ -13,6 +13,19 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const { name, entries } = await getBoard(externalId);
 
   return json({ name, entries });
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+
+  const action = formData.get("_action");
+  if (action === "upvote") {
+    const entryId = Number(formData.get("entryId"));
+    await upvoteEntry(entryId);
+    return null;
+  }
+
+  return null;
 }
 
 export default function Board() {
@@ -53,6 +66,7 @@ function Column({ name, entries }: ColumnProps) {
         {entries.map((entry) => (
           <Entry
             key={entry.id}
+            id={entry.id}
             content={entry.content}
             authorDisplayName={entry.authorDisplayName}
             upvotes={entry.upvotes}
@@ -65,11 +79,14 @@ function Column({ name, entries }: ColumnProps) {
 }
 
 interface EntryProps {
+  id: number;
   content: string;
   authorDisplayName: string;
   upvotes: number;
 }
-function Entry({ content, authorDisplayName, upvotes }: EntryProps) {
+function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
+  const fetcher = useFetcher();
+
   return (
     <div
       className={
@@ -82,10 +99,18 @@ function Entry({ content, authorDisplayName, upvotes }: EntryProps) {
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
       <div className="flex justify-between items-center px-3 py-1 bg-stone-100">
         <span className="text-stone-400">{authorDisplayName}</span>
-        <button className="flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full text-stone-400 outline-none hover:bg-stone-200 focus:bg-stone-200">
-          <UpArrowIcon />
-          <span className="text-stone-400">{upvotes}</span>
-        </button>
+        <fetcher.Form method="post">
+          <input type="hidden" name="_action" value="upvote" />
+
+          <input type="hidden" name="entryId" value={id} />
+          <button
+            type="submit"
+            className={`flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full text-stone-400 outline-none hover:bg-stone-200 focus:bg-stone-200`}
+          >
+            <UpArrowIcon />
+            <span className="text-stone-400">{upvotes}</span>
+          </button>
+        </fetcher.Form>
       </div>
     </div>
   );
