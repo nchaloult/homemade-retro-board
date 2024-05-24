@@ -73,9 +73,9 @@ export async function getBoard(externalId: string) {
       columnId: entries.columnId,
       columnName: columns.name,
     })
-    .from(entries)
-    .innerJoin(columns, eq(entries.columnId, columns.id))
-    .where(eq(entries.boardId, id))
+    .from(columns)
+    .leftJoin(entries, eq(columns.id, entries.columnId))
+    .where(eq(columns.boardId, id))
     .orderBy(asc(columns.order), asc(entries.order));
 
   const finalEntriesList: Column[] = [];
@@ -95,14 +95,18 @@ export async function getBoard(externalId: string) {
       };
     }
 
-    const trimmedEntry: Entry = {
-      id: entry.id,
-      content: entry.content,
-      authorDisplayName: entry.authorDisplayName,
-      upvotes: entry.upvotes,
-      order: entry.order,
-    };
-    curColumn.entries.push(trimmedEntry);
+    if (entry.id !== null) {
+      // TODO: Revisit ! characters. Why are they necessary? Where in previous
+      // lines have you messed up with typing stuff?
+      const trimmedEntry: Entry = {
+        id: entry.id,
+        content: entry.content!,
+        authorDisplayName: entry.authorDisplayName!,
+        upvotes: entry.upvotes!,
+        order: entry.order!,
+      };
+      curColumn.entries.push(trimmedEntry);
+    }
   }
   // After we've iterated through all the entries, curColumn will have all the
   // entries in the last column in it. We need to flush this buffer.
