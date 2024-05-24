@@ -20,10 +20,14 @@ export default function Board() {
 
   return (
     <div className="px-12 pb-12 pt-8">
-      <header className="mb-8">
+      {/* mb-6, not mb-8, since the <main> tag has padding on the top (and bottom,
+      but that's not important) of 2. */}
+      <header className="mb-6">
         <h1 className="font-bold text-4xl">{name}</h1>
       </header>
-      <main className="flex space-x-4">
+      {/* Need this vertical padding to offset the weird clipping that happens when
+      we add overflow-x-auto. */}
+      <main className="w-full py-2 flex space-x-4 overflow-x-auto">
         {entries.map((column) => (
           <Column
             key={column.columnId}
@@ -31,6 +35,7 @@ export default function Board() {
             entries={column.entries}
           />
         ))}
+        <NewColumnButton />
       </main>
     </div>
   );
@@ -42,7 +47,7 @@ interface ColumnProps {
 }
 function Column({ name, entries }: ColumnProps) {
   return (
-    <section className="w-80">
+    <section className="w-80 flex-none">
       <h2 className="font-semibold text-xl mb-4">{name}</h2>
       <div className="flex flex-col space-y-2">
         {entries.map((entry) => (
@@ -94,6 +99,18 @@ function NewCardButton() {
     >
       <PlusIcon />
       <span>New Card</span>
+    </button>
+  );
+}
+
+function NewColumnButton() {
+  return (
+    <button
+      type="button"
+      className="w-42 h-32 flex flex-none justify-center items-center space-x-1 px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+    >
+      <PlusIcon />
+      <span>New Column</span>
     </button>
   );
 }
