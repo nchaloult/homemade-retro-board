@@ -1,8 +1,9 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import { PlusIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
-import { getBoard, upvoteEntry } from "~/queries.server";
+import { downvoteEntry, getBoard, upvoteEntry } from "~/queries.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const externalId = params.externalId;
@@ -22,6 +23,10 @@ export async function action({ request }: ActionFunctionArgs) {
   if (action === "upvote") {
     const entryId = Number(formData.get("entryId"));
     await upvoteEntry(entryId);
+    return null;
+  } else if (action === "downvote") {
+    const entryId = Number(formData.get("entryId"));
+    await downvoteEntry(entryId);
     return null;
   }
 
@@ -87,6 +92,35 @@ interface EntryProps {
 function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
   const fetcher = useFetcher();
 
+  const [isUpvoted, setIsUpvoted] = useState(false);
+  const upvoteCount = fetcher.formData
+    ? fetcher.formData.get("newUpvoteCount")
+      ? Number(fetcher.formData.get("newUpvoteCount"))
+      : upvotes
+    : upvotes;
+
+  function handleUpvote(e) {
+    e.preventDefault();
+
+    const newIsUpvoted = !isUpvoted;
+
+    // Optimistic UI.
+    // TODO: Handle retracting this upon failures on the DB side.
+    setIsUpvoted(newIsUpvoted);
+
+    if (newIsUpvoted) {
+      fetcher.submit(
+        { entryId: id, _action: "upvote", newUpvoteCount: upvotes + 1 },
+        { method: "post" }
+      );
+    } else {
+      fetcher.submit(
+        { entryId: id, _action: "downvote", newUpvoteCount: upvotes - 1 },
+        { method: "post" }
+      );
+    }
+  }
+
   return (
     <div
       className={
@@ -99,18 +133,17 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
       <div className="flex justify-between items-center px-3 py-1 bg-stone-100">
         <span className="text-stone-400">{authorDisplayName}</span>
-        <fetcher.Form method="post">
-          <input type="hidden" name="_action" value="upvote" />
-
-          <input type="hidden" name="entryId" value={id} />
+        <form method="post" onSubmit={handleUpvote}>
           <button
             type="submit"
-            className={`flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full text-purple-800 outline-none hover:bg-stone-200 focus:bg-stone-200`}
+            className={`flex items-center space-x-1 px-2 py-1 -mr-2 rounded-full ${
+              isUpvoted ? "text-purple-800" : "text-stone-400"
+            } outline-none hover:bg-stone-200 focus:bg-stone-200`}
           >
             <UpArrowIcon />
-            <span>{upvotes}</span>
+            <span>{upvoteCount}</span>
           </button>
-        </fetcher.Form>
+        </form>
       </div>
     </div>
   );
