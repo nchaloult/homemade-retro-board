@@ -163,7 +163,7 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
       }
     >
       <div className="px-3 py-2">
-        <p>{content}</p>
+        <p className="whitespace-pre-line">{content}</p>
       </div>
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
       <div className="flex justify-between items-center px-3 py-1 bg-stone-100">
