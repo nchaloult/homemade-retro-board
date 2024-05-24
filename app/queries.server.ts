@@ -15,6 +15,17 @@ export async function createBoard(name: string) {
   return externalId;
 }
 
+export async function createEntry(
+  content: string,
+  authorDisplayName: string,
+  boardId: number,
+  columnId: number
+) {
+  await db
+    .insert(entries)
+    .values({ content, authorDisplayName, boardId, columnId });
+}
+
 export async function getAllBoards() {
   return await db
     .select({
