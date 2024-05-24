@@ -70,7 +70,7 @@ export async function getBoard(externalId: string) {
       authorDisplayName: entries.authorDisplayName,
       upvotes: entries.upvotes,
       order: entries.order,
-      columnId: entries.columnId,
+      columnId: columns.id,
       columnName: columns.name,
     })
     .from(columns)
