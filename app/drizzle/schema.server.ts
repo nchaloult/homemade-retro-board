@@ -17,6 +17,9 @@ export const boards = sqliteTable("boards", {
 export const columns = sqliteTable("columns", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
+  // We split the difference between the prev/next items. If an item is dropped
+  // between 1.00 and 2.00 it will be 1.50. If dropped between 1.50 and 2.00 it
+  // will be 1.75, etc.
   order: real("order").notNull().default(0),
   boardId: integer("board_id").references(() => boards.id, {
     onDelete: "cascade",
@@ -27,11 +30,12 @@ export const columns = sqliteTable("columns", {
 export const entries = sqliteTable("entries", {
   id: integer("id").primaryKey(),
   content: text("content").notNull(),
+  authorDisplayName: text("author_display_name").notNull(),
+  upvotes: integer("upvotes", { mode: "number" }).notNull().default(0),
   // We split the difference between the prev/next items. If an item is dropped
   // between 1.00 and 2.00 it will be 1.50. If dropped between 1.50 and 2.00 it
   // will be 1.75, etc.
   order: real("order").notNull().default(0),
-  upvotes: integer("upvotes", { mode: "number" }).notNull().default(0),
   boardId: integer("board_id").references(() => boards.id, {
     onDelete: "cascade",
     onUpdate: "cascade",

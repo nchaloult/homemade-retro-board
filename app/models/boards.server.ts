@@ -55,8 +55,9 @@ export async function getBoard(externalId: string) {
     .select({
       id: entries.id,
       content: entries.content,
-      order: entries.order,
+      authorDisplayName: entries.authorDisplayName,
       upvotes: entries.upvotes,
+      order: entries.order,
     })
     .from(entries)
     .leftJoin(columns, eq(entries.columnId, columns.id))

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1260ec08-c223-45be-8fc5-c52d13231458",
+  "id": "01d34d9a-fe98-4987-aa16-51ef49dc95f9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "boards": {
@@ -134,17 +134,24 @@
           "notNull": true,
           "autoincrement": false
         },
-        "order": {
-          "name": "order",
-          "type": "real",
+        "author_display_name": {
+          "name": "author_display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "upvotes": {
+          "name": "upvotes",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": 0
         },
-        "upvotes": {
-          "name": "upvotes",
-          "type": "integer",
+        "order": {
+          "name": "order",
+          "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
