@@ -123,7 +123,7 @@ export async function getBoard(externalId: string) {
   // entries in the last column in it. We need to flush this buffer.
   finalEntriesList.push(curColumn);
 
-  return { name, entries: finalEntriesList };
+  return { id, name, entries: finalEntriesList };
 }
 
 export async function upvoteEntry(id: number) {
