@@ -36,6 +36,18 @@ export async function doesBoardExist(externalId: string) {
   return resultSet.length > 0;
 }
 
+export interface Entry {
+  id: number;
+  content: string;
+  authorDisplayName: string;
+  upvotes: number;
+  order: number;
+}
+export interface Column {
+  columnId: number;
+  columnName: string;
+  entries: Entry[];
+}
 export async function getBoard(externalId: string) {
   // TODO: Look for ways to reduce the number of queries we need to make?
 
@@ -62,9 +74,39 @@ export async function getBoard(externalId: string) {
       columnName: columns.name,
     })
     .from(entries)
-    .leftJoin(columns, eq(entries.columnId, columns.id))
+    .innerJoin(columns, eq(entries.columnId, columns.id))
     .where(eq(entries.boardId, id))
     .orderBy(asc(columns.order), asc(entries.order));
 
-  return { name, entries: entriesArray };
+  const finalEntriesList: Column[] = [];
+  let curColumn: Column = { columnId: 0, columnName: "", entries: [] };
+  let curColumnId: number | undefined = undefined;
+  for (const entry of entriesArray) {
+    if (curColumnId !== entry.columnId) {
+      if (curColumnId !== undefined) {
+        finalEntriesList.push(curColumn);
+      }
+      curColumnId = entry.columnId!; // TODO: Revisit ! character.
+
+      curColumn = {
+        columnId: entry.columnId!, // TODO: Revisit ! character.
+        columnName: entry.columnName,
+        entries: [],
+      };
+    }
+
+    const trimmedEntry: Entry = {
+      id: entry.id,
+      content: entry.content,
+      authorDisplayName: entry.authorDisplayName,
+      upvotes: entry.upvotes,
+      order: entry.order,
+    };
+    curColumn.entries.push(trimmedEntry);
+  }
+  // After we've iterated through all the entries, curColumn will have all the
+  // entries in the last column in it. We need to flush this buffer.
+  finalEntriesList.push(curColumn);
+
+  return { name, entries: finalEntriesList };
 }
