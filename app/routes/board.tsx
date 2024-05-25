@@ -44,6 +44,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const content = String(formData.get("content"));
     const boardId = Number(formData.get("boardId"));
     const columnId = Number(formData.get("columnId"));
+    const order = Number(formData.get("order"));
 
     const cookieHeader = request.headers.get("Cookie");
     const cookie = (await displayNameCookie.parse(cookieHeader)) || {};
@@ -51,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
       cookie.displayName || ANONYMOUS_AUTHOR_DISPLAY_NAME
     );
 
-    await createEntry(content, displayName, boardId, columnId);
+    await createEntry(content, displayName, boardId, columnId, order);
   }
 
   return null;
@@ -61,8 +62,6 @@ export default function Board() {
   const { id, name, entries } = useLoaderData<typeof loader>();
 
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
-  const newColumnOrder =
-    entries.length === 0 ? 0 : entries[entries.length - 1].columnOrder + 1;
 
   return (
     <div className="px-12 pb-12 pt-8">
@@ -81,12 +80,21 @@ export default function Board() {
             id={column.columnId}
             name={column.columnName}
             entries={column.entries}
+            newEntryOrder={
+              column.entries.length === 0
+                ? 0
+                : column.entries[column.entries.length - 1].order + 1
+            }
           />
         ))}
         {isCreatingNewColumn ? (
           <NewColumnForm
             boardId={id}
-            newColumnOrder={newColumnOrder}
+            newColumnOrder={
+              entries.length === 0
+                ? 0
+                : entries[entries.length - 1].columnOrder + 1
+            }
             onComplete={() => setIsCreatingNewColumn(false)}
           />
         ) : (
@@ -102,8 +110,9 @@ interface ColumnProps {
   boardId: number;
   name: string;
   entries: Entry[];
+  newEntryOrder: number;
 }
-function Column({ id, boardId, name, entries }: ColumnProps) {
+function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
   const [isCreatingNewEntry, setIsCreatingNewEntry] = useState(false);
 
   return (
@@ -123,6 +132,7 @@ function Column({ id, boardId, name, entries }: ColumnProps) {
           <NewCardForm
             boardId={boardId}
             columnId={id}
+            order={newEntryOrder}
             onComplete={() => setIsCreatingNewEntry(false)}
           />
         ) : (
@@ -296,9 +306,15 @@ function NewColumnForm({
 interface NewCardFormProps {
   boardId: number;
   columnId: number;
+  order: number;
   onComplete: () => void;
 }
-function NewCardForm({ boardId, columnId, onComplete }: NewCardFormProps) {
+function NewCardForm({
+  boardId,
+  columnId,
+  order,
+  onComplete,
+}: NewCardFormProps) {
   const submit = useSubmit();
 
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -328,6 +344,7 @@ function NewCardForm({ boardId, columnId, onComplete }: NewCardFormProps) {
       <input type="hidden" name="_action" value="createEntry" />
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
+      <input type="hidden" name="order" value={order} />
 
       <textarea
         // eslint-disable-next-line jsx-a11y/no-autofocus
