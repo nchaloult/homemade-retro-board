@@ -5,6 +5,7 @@ import { displayNameCookie } from "~/displayNameCookie.server";
 import { PlusIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
 import {
+  createColumn,
   createEntry,
   downvoteEntry,
   getBoard,
@@ -31,11 +32,13 @@ export async function action({ request }: ActionFunctionArgs) {
   if (action === "upvote") {
     const entryId = Number(formData.get("entryId"));
     await upvoteEntry(entryId);
-    return null;
   } else if (action === "downvote") {
     const entryId = Number(formData.get("entryId"));
     await downvoteEntry(entryId);
-    return null;
+  } else if (action === "createColumn") {
+    const name = String(formData.get("name"));
+    const boardId = Number(formData.get("boardId"));
+    await createColumn(name, boardId);
   } else if (action === "createEntry") {
     const content = String(formData.get("content"));
     const boardId = Number(formData.get("boardId"));
@@ -48,7 +51,6 @@ export async function action({ request }: ActionFunctionArgs) {
     );
 
     await createEntry(content, displayName, boardId, columnId);
-    return null;
   }
 
   return null;
@@ -56,6 +58,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Board() {
   const { id, name, entries } = useLoaderData<typeof loader>();
+
+  const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
 
   return (
     <div className="px-12 pb-12 pt-8">
@@ -76,7 +80,14 @@ export default function Board() {
             entries={column.entries}
           />
         ))}
-        <NewColumnButton />
+        {isCreatingNewColumn ? (
+          <NewColumnForm
+            boardId={id}
+            onComplete={() => setIsCreatingNewColumn(false)}
+          />
+        ) : (
+          <NewColumnButton onClick={() => setIsCreatingNewColumn(true)} />
+        )}
       </main>
     </div>
   );
@@ -200,6 +211,78 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
   );
 }
 
+interface NewColumnFormProps {
+  boardId: number;
+  onComplete: () => void;
+}
+function NewColumnForm({ boardId, onComplete }: NewColumnFormProps) {
+  const submit = useSubmit();
+
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+
+  function handleNewColumn(e) {
+    e.preventDefault();
+
+    // TODO: Honestly not sure why we can't use a fetcher, and call
+    // fetcher.submit() here. I tried and tried, but couldn't invoke the action
+    // function. Perhaps it has something to do with there being more than one
+    // fetcher on this page? :shrug: Either way, this accomplishes the same
+    // thing.
+    submit(e.currentTarget);
+
+    // Being able to call this function on form submission is the whole reason
+    // we aren't using a fetcher.Form; we need a way to hook into the submission
+    // process.
+    onComplete();
+  }
+
+  return (
+    <form
+      method="post"
+      onSubmit={handleNewColumn}
+      className="flex flex-col gap-2"
+    >
+      <input type="hidden" name="_action" value="createColumn" />
+      <input type="hidden" name="boardId" value={boardId} />
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Name"
+        // eslint-disable-next-line jsx-a11y/no-autofocus
+        autoFocus
+        onKeyDown={(e) => {
+          // Shift + Enter should add a new line, not submit the form.
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            addButtonRef.current?.click();
+          } else if (e.key === "Escape") {
+            // Close the dialog, and show the "New Card" button again.
+            onComplete();
+          }
+        }}
+        className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
+      />
+      <div className="flex justify-between">
+        <button
+          type="button"
+          onClick={() => onComplete()}
+          className="px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+        >
+          Cancel
+        </button>
+        <button
+          ref={addButtonRef}
+          type="submit"
+          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
+        >
+          Add
+        </button>
+      </div>
+    </form>
+  );
+}
+
 interface NewCardFormProps {
   boardId: number;
   columnId: number;
@@ -272,10 +355,14 @@ function NewCardForm({ boardId, columnId, onComplete }: NewCardFormProps) {
   );
 }
 
-function NewColumnButton() {
+interface NewColumnButtonProps {
+  onClick: () => void;
+}
+function NewColumnButton({ onClick }: NewColumnButtonProps) {
   return (
     <button
       type="button"
+      onClick={() => onClick()}
       className="w-42 h-32 flex flex-none justify-center items-center gap-1 px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
     >
       <PlusIcon />
