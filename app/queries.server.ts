@@ -27,11 +27,12 @@ export async function createEntry(
   content: string,
   authorDisplayName: string,
   boardId: number,
-  columnId: number
+  columnId: number,
+  order: number
 ) {
   await db
     .insert(entries)
-    .values({ content, authorDisplayName, boardId, columnId });
+    .values({ content, authorDisplayName, boardId, columnId, order });
 }
 
 export async function getAllBoards() {
