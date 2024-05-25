@@ -259,7 +259,7 @@ function NewColumnForm({
     <form
       method="post"
       onSubmit={handleNewColumn}
-      className="flex flex-col gap-2"
+      className="flex flex-col flex-none gap-2 w-80"
     >
       <input type="hidden" name="_action" value="createColumn" />
       <input type="hidden" name="boardId" value={boardId} />
@@ -281,7 +281,7 @@ function NewColumnForm({
             onComplete();
           }
         }}
-        className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
+        className="w-full p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
       />
       <div className="flex justify-between">
         <button
