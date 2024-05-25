@@ -25,12 +25,12 @@ export default function CreateBoard() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <div className="h-svh flex flex-col justify-center items-center space-y-8">
+    <div className="h-svh flex flex-col justify-center items-center gap-8">
       <header>
         <h1 className="text-4xl font-bold">Create New Board</h1>
       </header>
       <main className="w-1/3 min-w-80">
-        <Form method="post" className="flex flex-col space-y-2">
+        <Form method="post" className="flex flex-col gap-2">
           {actionData?.errors.name ? (
             <label htmlFor="name" className="ml-1 text-sm text-red-500">
               {actionData.errors.name}
