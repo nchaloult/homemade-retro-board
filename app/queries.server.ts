@@ -123,6 +123,11 @@ export async function getBoard(externalId: string) {
   // entries in the last column in it. We need to flush this buffer.
   finalEntriesList.push(curColumn);
 
+  // If there are no entries for this board, don't include the placeholder
+  // curColumn Column in the response we send to the client.
+  if (curColumnId === undefined) {
+    return { id, name, entries: [] };
+  }
   return { id, name, entries: finalEntriesList };
 }
 
