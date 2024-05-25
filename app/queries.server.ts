@@ -15,6 +15,10 @@ export async function createBoard(name: string) {
   return externalId;
 }
 
+export async function createColumn(name: string, boardId: number) {
+  await db.insert(columns).values({ name, boardId });
+}
+
 export async function createEntry(
   content: string,
   authorDisplayName: string,
