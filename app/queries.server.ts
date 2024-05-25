@@ -15,8 +15,12 @@ export async function createBoard(name: string) {
   return externalId;
 }
 
-export async function createColumn(name: string, boardId: number) {
-  await db.insert(columns).values({ name, boardId });
+export async function createColumn(
+  name: string,
+  boardId: number,
+  order: number
+) {
+  await db.insert(columns).values({ name, boardId, order });
 }
 
 export async function createEntry(
@@ -61,6 +65,7 @@ export interface Entry {
 export interface Column {
   columnId: number;
   columnName: string;
+  columnOrder: number;
   entries: Entry[];
 }
 export async function getBoard(externalId: string) {
@@ -87,6 +92,7 @@ export async function getBoard(externalId: string) {
       order: entries.order,
       columnId: columns.id,
       columnName: columns.name,
+      columnOrder: columns.order,
     })
     .from(columns)
     .leftJoin(entries, eq(columns.id, entries.columnId))
@@ -94,7 +100,12 @@ export async function getBoard(externalId: string) {
     .orderBy(asc(columns.order), asc(entries.order));
 
   const finalEntriesList: Column[] = [];
-  let curColumn: Column = { columnId: 0, columnName: "", entries: [] };
+  let curColumn: Column = {
+    columnId: -1,
+    columnName: "",
+    columnOrder: -1,
+    entries: [],
+  };
   let curColumnId: number | undefined = undefined;
   for (const entry of entriesArray) {
     if (curColumnId !== entry.columnId) {
@@ -106,6 +117,7 @@ export async function getBoard(externalId: string) {
       curColumn = {
         columnId: entry.columnId!, // TODO: Revisit ! character.
         columnName: entry.columnName,
+        columnOrder: entry.columnOrder,
         entries: [],
       };
     }

@@ -38,7 +38,8 @@ export async function action({ request }: ActionFunctionArgs) {
   } else if (action === "createColumn") {
     const name = String(formData.get("name"));
     const boardId = Number(formData.get("boardId"));
-    await createColumn(name, boardId);
+    const order = Number(formData.get("order"));
+    await createColumn(name, boardId, order);
   } else if (action === "createEntry") {
     const content = String(formData.get("content"));
     const boardId = Number(formData.get("boardId"));
@@ -60,6 +61,8 @@ export default function Board() {
   const { id, name, entries } = useLoaderData<typeof loader>();
 
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
+  const newColumnOrder =
+    entries.length === 0 ? 0 : entries[entries.length - 1].columnOrder + 1;
 
   return (
     <div className="px-12 pb-12 pt-8">
@@ -83,6 +86,7 @@ export default function Board() {
         {isCreatingNewColumn ? (
           <NewColumnForm
             boardId={id}
+            newColumnOrder={newColumnOrder}
             onComplete={() => setIsCreatingNewColumn(false)}
           />
         ) : (
@@ -213,9 +217,14 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
 
 interface NewColumnFormProps {
   boardId: number;
+  newColumnOrder: number;
   onComplete: () => void;
 }
-function NewColumnForm({ boardId, onComplete }: NewColumnFormProps) {
+function NewColumnForm({
+  boardId,
+  newColumnOrder,
+  onComplete,
+}: NewColumnFormProps) {
   const submit = useSubmit();
 
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -244,6 +253,7 @@ function NewColumnForm({ boardId, onComplete }: NewColumnFormProps) {
     >
       <input type="hidden" name="_action" value="createColumn" />
       <input type="hidden" name="boardId" value={boardId} />
+      <input type="hidden" name="order" value={newColumnOrder} />
 
       <input
         type="text"
