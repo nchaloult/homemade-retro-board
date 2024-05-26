@@ -1,7 +1,13 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
-import { useRef, useState } from "react";
+import {
+  useFetcher,
+  useLoaderData,
+  useRevalidator,
+  useSubmit,
+} from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 import { displayNameCookie } from "~/displayNameCookie.server";
+import { emitter } from "~/emitter.server";
 import { PlusIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
 import {
@@ -11,6 +17,8 @@ import {
   getBoard,
   upvoteEntry,
 } from "~/queries.server";
+import { useEventSource } from "remix-utils/sse/react";
+import useDataRefresh from "~/hooks/useDataRefresh";
 
 const ANONYMOUS_AUTHOR_DISPLAY_NAME = "Anonymous";
 
@@ -52,7 +60,14 @@ export async function action({ request }: ActionFunctionArgs) {
       cookie.displayName || ANONYMOUS_AUTHOR_DISPLAY_NAME
     );
 
-    await createEntry(content, displayName, boardId, columnId, order);
+    const newEntryId = await createEntry(
+      content,
+      displayName,
+      boardId,
+      columnId,
+      order
+    );
+    emitter.emit("entry", newEntryId);
   }
 
   return null;
@@ -62,6 +77,13 @@ export default function Board() {
   const { id, name, entries } = useLoaderData<typeof loader>();
 
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
+
+  const revalidator = useRevalidator();
+  const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
+    event: "new-entry",
+  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => revalidator.revalidate(), [lastEntryId]);
 
   return (
     <div className="px-12 pb-12 pt-8">
