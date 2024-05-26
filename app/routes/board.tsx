@@ -18,7 +18,6 @@ import {
   upvoteEntry,
 } from "~/queries.server";
 import { useEventSource } from "remix-utils/sse/react";
-import useDataRefresh from "~/hooks/useDataRefresh";
 
 const ANONYMOUS_AUTHOR_DISPLAY_NAME = "Anonymous";
 
@@ -60,15 +59,14 @@ export async function action({ request }: ActionFunctionArgs) {
       cookie.displayName || ANONYMOUS_AUTHOR_DISPLAY_NAME
     );
 
-    const newEntryId = await createEntry(
-      content,
-      displayName,
-      boardId,
-      columnId,
-      order
-    );
-    emitter.emit("entry", newEntryId);
+    await createEntry(content, displayName, boardId, columnId, order);
   }
+
+  // This will technically be fired even if the _action field's value isn't
+  // equal to any of the ones we handle above. That's alright, though — all that
+  // will happen is every tab will call the GET /boards/:externalId endpoint
+  // again.
+  emitter.emit("boardUpdate");
 
   return null;
 }
@@ -80,7 +78,7 @@ export default function Board() {
 
   const revalidator = useRevalidator();
   const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
-    event: "new-entry",
+    event: "board-update",
   });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => revalidator.revalidate(), [lastEntryId]);
