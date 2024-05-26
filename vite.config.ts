@@ -16,6 +16,9 @@ export default defineConfig({
             route("boards", "routes/boards.tsx");
             route("boards/:externalId", "routes/board.tsx");
           });
+
+          // Resource routes.
+          route("boards/:externalId/subscribe", "routes/subscribe.tsx");
         });
       },
     }),
