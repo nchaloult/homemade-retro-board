@@ -84,7 +84,7 @@ export default function Board() {
   useEffect(() => revalidator.revalidate(), [lastEntryId]);
 
   return (
-    <div className="px-12 pb-12 pt-8">
+    <div className="flex flex-col grow px-12 pt-8">
       {/* mb-6, not mb-8, since the <main> tag has padding on the top (and bottom,
       but that's not important) of 2. */}
       <header className="mb-6">
@@ -92,7 +92,7 @@ export default function Board() {
       </header>
       {/* Need this vertical padding to offset the weird clipping that happens when
       we add overflow-x-auto. */}
-      <main className="w-full py-2 flex gap-4 overflow-x-auto">
+      <main className="w-full py-2 flex gap-4 overflow-x-auto grow">
         {entries.map((column) => (
           <Column
             key={column.columnId}
