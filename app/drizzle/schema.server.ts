@@ -45,3 +45,26 @@ export const entries = sqliteTable("entries", {
     onUpdate: "cascade",
   }),
 });
+
+export const comments = sqliteTable("comments", {
+  id: integer("id").primaryKey(),
+  content: text("content").notNull(),
+  authorDisplayName: text("author_display_name").notNull(),
+  upvotes: integer("upvotes", { mode: "number" }).notNull().default(0),
+  // We split the difference between the prev/next items. If an item is dropped
+  // between 1.00 and 2.00 it will be 1.50. If dropped between 1.50 and 2.00 it
+  // will be 1.75, etc.
+  order: real("order").notNull().default(0),
+  boardId: integer("board_id").references(() => boards.id, {
+    onDelete: "cascade",
+    onUpdate: "cascade",
+  }),
+  columnId: integer("column_id").references(() => columns.id, {
+    onDelete: "cascade",
+    onUpdate: "cascade",
+  }),
+  entryId: integer("entry_id").references(() => entries.id, {
+    onDelete: "cascade",
+    onUpdate: "cascade",
+  }),
+});

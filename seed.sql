@@ -49,3 +49,12 @@ INSERT INTO entries (content, author_display_name, `order`, board_id, column_id)
     1,
     1
 );
+
+INSERT INTO comments (content, author_display_name, `order`, board_id, column_id, entry_id) VALUES (
+    "Yes",
+    "Paul",
+    0.0,
+    1,
+    1,
+    4
+);
