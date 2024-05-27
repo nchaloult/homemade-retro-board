@@ -28,7 +28,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   const { id, name, entries } = await getBoard(externalId);
-
   return json({ id, name, entries });
 }
 

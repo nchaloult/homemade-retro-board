@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const boards = sqliteTable("boards", {
@@ -14,6 +14,12 @@ export const boards = sqliteTable("boards", {
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
+export const boardsRelations = relations(boards, ({ many }) => ({
+  columns: many(columns),
+  entries: many(entries),
+  comments: many(comments),
+}));
+
 export const columns = sqliteTable("columns", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
@@ -26,6 +32,14 @@ export const columns = sqliteTable("columns", {
     onUpdate: "cascade",
   }),
 });
+
+export const columnsRelations = relations(columns, ({ many, one }) => ({
+  board: one(boards, {
+    fields: [columns.boardId],
+    references: [boards.id],
+  }),
+  entries: many(entries),
+}));
 
 export const entries = sqliteTable("entries", {
   id: integer("id").primaryKey(),
@@ -45,6 +59,18 @@ export const entries = sqliteTable("entries", {
     onUpdate: "cascade",
   }),
 });
+
+export const entriesRelations = relations(entries, ({ many, one }) => ({
+  board: one(boards, {
+    fields: [entries.boardId],
+    references: [boards.id],
+  }),
+  column: one(columns, {
+    fields: [entries.columnId],
+    references: [columns.id],
+  }),
+  comments: many(comments),
+}));
 
 export const comments = sqliteTable("comments", {
   id: integer("id").primaryKey(),
@@ -68,3 +94,18 @@ export const comments = sqliteTable("comments", {
     onUpdate: "cascade",
   }),
 });
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  board: one(boards, {
+    fields: [comments.boardId],
+    references: [boards.id],
+  }),
+  column: one(columns, {
+    fields: [comments.columnId],
+    references: [columns.id],
+  }),
+  entry: one(entries, {
+    fields: [comments.entryId],
+    references: [entries.id],
+  }),
+}));
