@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { displayNameCookie } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
 import { PlusIcon, UpArrowIcon } from "~/icons";
-import type { Entry } from "~/queries.server";
+import type { Comment, Entry } from "~/queries.server";
 import {
   createColumn,
   createEntry,
@@ -35,12 +35,18 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
 
   const action = formData.get("_action");
-  if (action === "upvote") {
+  if (action === "upvoteEntry") {
     const entryId = Number(formData.get("entryId"));
     await upvoteEntry(entryId);
-  } else if (action === "downvote") {
+  } else if (action === "downvoteEntry") {
     const entryId = Number(formData.get("entryId"));
     await downvoteEntry(entryId);
+  } else if (action === "upvoteComment") {
+    const entryId = Number(formData.get("commentId"));
+    // TODO: Call upvoteComment()
+  } else if (action === "downvoteComment") {
+    const entryId = Number(formData.get("commentId"));
+    // TODO: Call downvoteComment()
   } else if (action === "createColumn") {
     const name = String(formData.get("name"));
     const boardId = Number(formData.get("boardId"));
@@ -145,6 +151,7 @@ function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
             content={entry.content}
             authorDisplayName={entry.authorDisplayName}
             upvotes={entry.upvotes}
+            comments={entry.comments}
           />
         ))}
         {isCreatingNewEntry ? (
@@ -167,8 +174,15 @@ interface EntryProps {
   content: string;
   authorDisplayName: string;
   upvotes: number;
+  comments: Comment[];
 }
-function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
+function Entry({
+  id,
+  content,
+  authorDisplayName,
+  upvotes,
+  comments,
+}: EntryProps) {
   const fetcher = useFetcher();
 
   const [isUpvoted, setIsUpvoted] = useState(false);
@@ -189,12 +203,102 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
 
     if (newIsUpvoted) {
       fetcher.submit(
-        { entryId: id, _action: "upvote", newUpvoteCount: upvotes + 1 },
+        { entryId: id, _action: "upvoteEntry", newUpvoteCount: upvotes + 1 },
         { method: "post" }
       );
     } else {
       fetcher.submit(
-        { entryId: id, _action: "downvote", newUpvoteCount: upvotes - 1 },
+        { entryId: id, _action: "downvoteEntry", newUpvoteCount: upvotes - 1 },
+        { method: "post" }
+      );
+    }
+  }
+
+  return (
+    <div>
+      <div
+        className={
+          "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition"
+        }
+      >
+        <div className="px-3 py-2">
+          <p className="whitespace-pre-line">{content}</p>
+        </div>
+        <hr className="h-0.5 bg-stone-200 border-0 rounded" />
+        <div className="flex justify-between items-center px-3 py-1 bg-stone-100">
+          <span className="text-stone-400">{authorDisplayName}</span>
+          <form method="post" onSubmit={handleUpvote}>
+            <button
+              type="submit"
+              className={`flex items-center gap-1 px-2 py-1 -mr-2 rounded-full ${
+                isUpvoted ? "text-purple-800" : "text-stone-400"
+              } outline-none hover:bg-stone-200 focus:bg-stone-200`}
+            >
+              <UpArrowIcon />
+              <span>{upvoteCount}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        {comments.map((comment, i) => (
+          <Comment
+            i={i}
+            key={comment.id}
+            id={comment.id}
+            content={comment.content}
+            authorDisplayName={comment.authorDisplayName}
+            upvotes={comment.upvotes}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface CommentProps {
+  i: number;
+  id: number;
+  content: string;
+  authorDisplayName: string;
+  upvotes: number;
+}
+function Comment({ i, id, content, authorDisplayName, upvotes }: CommentProps) {
+  const fetcher = useFetcher();
+
+  const [isUpvoted, setIsUpvoted] = useState(false);
+  const upvoteCount = fetcher.formData
+    ? fetcher.formData.get("newUpvoteCount")
+      ? Number(fetcher.formData.get("newUpvoteCount"))
+      : upvotes
+    : upvotes;
+
+  function handleUpvote(e) {
+    e.preventDefault();
+
+    const newIsUpvoted = !isUpvoted;
+
+    // Optimistic UI.
+    // TODO: Handle retracting this upon failures on the DB side.
+    setIsUpvoted(newIsUpvoted);
+
+    if (newIsUpvoted) {
+      fetcher.submit(
+        {
+          commentId: id,
+          _action: "upvoteComment",
+          newUpvoteCount: upvotes + 1,
+        },
+        { method: "post" }
+      );
+    } else {
+      fetcher.submit(
+        {
+          commentId: id,
+          _action: "downvoteComment",
+          newUpvoteCount: upvotes - 1,
+        },
         { method: "post" }
       );
     }
@@ -202,9 +306,9 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
 
   return (
     <div
-      className={
-        "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition"
-      }
+      className={`relative z-[${
+        -i - 1
+      }] w-11/12 mx-auto overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition -translate-y-8`}
     >
       <div className="px-3 py-2">
         <p className="whitespace-pre-line">{content}</p>
