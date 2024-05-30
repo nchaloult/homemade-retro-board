@@ -163,6 +163,8 @@ export async function downvoteEntry(id: number) {
 }
 
 export async function sortColumn(id: number) {
+  // TODO: Look into using other parameters/string interpolation goodies that
+  // Drizzle's "magic sql" operator supports.
   await db.run(sql`
   WITH ranked_entries AS (
     SELECT 
