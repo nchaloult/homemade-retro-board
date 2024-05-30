@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { displayNameCookie } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
-import { PlusIcon, SortIcon, UpArrowIcon } from "~/icons";
+import { ClipboardIcon, PlusIcon, SortIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
 import {
   createColumn,
@@ -30,7 +30,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   const { id, name, entries } = await getBoard(externalId);
 
-  return json({ id, name, entries });
+  return json({ id, externalId, name, entries });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -76,9 +76,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Board() {
-  const { id, name, entries } = useLoaderData<typeof loader>();
+  const { id, externalId, name, entries } = useLoaderData<typeof loader>();
 
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
+  const [hasCopiedBoardID, setHasCopiedBoardID] = useState(false);
 
   const revalidator = useRevalidator();
   const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
@@ -87,12 +88,29 @@ export default function Board() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => revalidator.revalidate(), [lastEntryId]);
 
+  async function handleBoardIDCopyClick() {
+    await navigator.clipboard.writeText(externalId);
+
+    setHasCopiedBoardID(true);
+    setTimeout(() => setHasCopiedBoardID(false), 3000);
+  }
+
   return (
     <div className="flex flex-col grow px-12 pt-8">
       {/* mb-6, not mb-8, since the <main> tag has padding on the top (and bottom,
       but that's not important) of 2. */}
-      <header className="mb-6">
+      <header className="flex flex-col gap-1 mb-6">
         <h1 className="font-bold text-4xl">{name}</h1>
+        <button
+          disabled={hasCopiedBoardID}
+          onClick={() => handleBoardIDCopyClick()}
+          className={`w-fit flex items-center gap-2 px-3 py-1 -ml-3 rounded-full font-semibold ${
+            hasCopiedBoardID ? "text-purple-800" : "text-stone-400"
+          } outline-none hover:bg-stone-200 focus:bg-stone-200`}
+        >
+          <ClipboardIcon isCopied={hasCopiedBoardID} />
+          Board ID: {externalId}
+        </button>
       </header>
       {/* Need this vertical padding to offset the weird clipping that happens when
       we add overflow-x-auto. */}
