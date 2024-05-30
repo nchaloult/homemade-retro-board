@@ -161,3 +161,23 @@ export async function downvoteEntry(id: number) {
     .set({ upvotes: sql`${entries.upvotes} - 1` })
     .where(eq(entries.id, id));
 }
+
+export async function sortColumn(id: number) {
+  await db.run(sql`
+  WITH ranked_entries AS (
+    SELECT 
+        id,
+        upvotes,
+        ROW_NUMBER() OVER (ORDER BY upvotes DESC) AS new_order
+    FROM entries
+    WHERE entries.column_id = ${id}
+  )
+  UPDATE entries
+  SET \`order\` = (
+      SELECT new_order
+      FROM ranked_entries
+      WHERE ranked_entries.id = entries.id
+  )
+  WHERE entries.column_id = ${id};
+  `);
+}

@@ -15,6 +15,7 @@ import {
   createEntry,
   downvoteEntry,
   getBoard,
+  sortColumn,
   upvoteEntry,
 } from "~/queries.server";
 import { useEventSource } from "remix-utils/sse/react";
@@ -42,6 +43,9 @@ export async function action({ request }: ActionFunctionArgs) {
   } else if (action === "downvote") {
     const entryId = Number(formData.get("entryId"));
     await downvoteEntry(entryId);
+  } else if (action === "sort") {
+    const columnId = Number(formData.get("columnId"));
+    await sortColumn(columnId);
   } else if (action === "createColumn") {
     const name = String(formData.get("name"));
     const boardId = Number(formData.get("boardId"));
@@ -133,28 +137,32 @@ interface ColumnProps {
   newEntryOrder: number;
 }
 function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
+  const fetcher = useFetcher();
   const [isCreatingNewEntry, setIsCreatingNewEntry] = useState(false);
-  const [sortedEntries, setSortedEntries] = useState(entries);
 
-  function handleSort() {
-    const newlySortedEntries = entries.sort((a, b) => b.upvotes - a.upvotes);
-    setSortedEntries(newlySortedEntries);
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    fetcher.submit({ columnId: id, _action: "sort" }, { method: "post" });
   }
 
   return (
     <section className="w-80 flex-none">
-      <div className="flex justify-between">
+      <form
+        method="post"
+        onSubmit={handleSubmit}
+        className="flex justify-between"
+      >
         <h2 className="font-semibold text-xl mb-4">{name}</h2>
         <button
-          type="button"
-          onClick={() => handleSort()}
+          type="submit"
           className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
         >
           <SortIcon />
         </button>
-      </div>
+      </form>
       <div className="flex flex-col gap-2">
-        {sortedEntries.map((entry) => (
+        {entries.map((entry) => (
           <Entry
             key={entry.id}
             id={entry.id}
