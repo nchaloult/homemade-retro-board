@@ -6,7 +6,7 @@ import {
   useSubmit,
 } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
-import { displayNameCookie } from "~/displayNameCookie.server";
+import { getDisplayName } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
 import { ClipboardIcon, PlusIcon, SortIcon, UpArrowIcon } from "~/icons";
 import type { Entry } from "~/queries.server";
@@ -19,8 +19,6 @@ import {
   upvoteEntry,
 } from "~/queries.server";
 import { useEventSource } from "remix-utils/sse/react";
-
-const ANONYMOUS_AUTHOR_DISPLAY_NAME = "Anonymous";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const externalId = params.externalId;
@@ -61,11 +59,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const columnId = Number(formData.get("columnId"));
     const order = Number(formData.get("order"));
 
-    const cookieHeader = request.headers.get("Cookie");
-    const cookie = (await displayNameCookie.parse(cookieHeader)) || {};
-    const displayName = String(
-      cookie.displayName || ANONYMOUS_AUTHOR_DISPLAY_NAME
-    );
+    const displayName = (await getDisplayName(request)) || "Anonymous";
 
     await createEntry(gifUrl, content, displayName, boardId, columnId, order);
   }
