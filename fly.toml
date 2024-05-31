@@ -8,6 +8,9 @@ primary_region = 'iad'
 
 [build]
 
+[env]
+  DATABASE_PATH = "/data/sqlite.db"
+
 [http_service]
   internal_port = 3000
   force_https = true
