@@ -100,7 +100,7 @@ export default function Board() {
   }
 
   return (
-    <div className="flex flex-col grow px-12 pt-8">
+    <div className="flex flex-col grow px-12 pt-8 pb-12">
       {/* mb-6, not mb-8, since the <main> tag has padding on the top (and bottom,
       but that's not important) of 2. */}
       <header className="flex flex-col gap-1 mb-6">
