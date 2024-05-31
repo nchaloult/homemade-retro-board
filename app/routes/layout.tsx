@@ -1,12 +1,9 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { displayNameCookie } from "~/displayNameCookie.server";
+import { getDisplayName } from "~/displayNameCookie.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await displayNameCookie.parse(cookieHeader)) || {};
-  const displayName = cookie.displayName || undefined;
-
+  const displayName = await getDisplayName(request);
   return json({ displayName });
 }
 
