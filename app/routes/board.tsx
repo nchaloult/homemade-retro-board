@@ -20,15 +20,19 @@ import {
 } from "~/queries.server";
 import { useEventSource } from "remix-utils/sse/react";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+const ANONYMOUS_AUTHOR_DISPLAY_NAME = "Anonymous";
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const externalId = params.externalId;
   if (externalId === undefined || externalId.length === 0) {
     throw new Response("Board ID not found", { status: 400 });
   }
 
   const { id, name, entries } = await getBoard(externalId);
+  const displayName =
+    (await getDisplayName(request)) || ANONYMOUS_AUTHOR_DISPLAY_NAME;
 
-  return json({ id, externalId, name, entries });
+  return json({ displayName, id, externalId, name, entries });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -59,7 +63,8 @@ export async function action({ request }: ActionFunctionArgs) {
     const columnId = Number(formData.get("columnId"));
     const order = Number(formData.get("order"));
 
-    const displayName = (await getDisplayName(request)) || "Anonymous";
+    const displayName =
+      (await getDisplayName(request)) || ANONYMOUS_AUTHOR_DISPLAY_NAME;
 
     await createEntry(gifUrl, content, displayName, boardId, columnId, order);
   }
@@ -74,7 +79,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Board() {
-  const { id, externalId, name, entries } = useLoaderData<typeof loader>();
+  const { displayName, id, externalId, name, entries } =
+    useLoaderData<typeof loader>();
 
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
   const [hasCopiedBoardID, setHasCopiedBoardID] = useState(false);
@@ -116,6 +122,7 @@ export default function Board() {
         {entries.map((column) => (
           <Column
             key={column.columnId}
+            displayName={displayName}
             boardId={id}
             id={column.columnId}
             name={column.columnName}
@@ -147,12 +154,20 @@ export default function Board() {
 
 interface ColumnProps {
   id: number;
+  displayName: string;
   boardId: number;
   name: string;
   entries: Entry[];
   newEntryOrder: number;
 }
-function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
+function Column({
+  id,
+  displayName,
+  boardId,
+  name,
+  entries,
+  newEntryOrder,
+}: ColumnProps) {
   const fetcher = useFetcher();
   const [isCreatingNewEntry, setIsCreatingNewEntry] = useState(false);
 
@@ -160,6 +175,18 @@ function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
     e.preventDefault();
 
     fetcher.submit({ columnId: id, _action: "sort" }, { method: "post" });
+  }
+
+  function createNewEntryOnComplete() {
+    setIsCreatingNewEntry(false);
+  }
+
+  function handleCreateNewEntry(e) {
+    e.preventDefault();
+
+    fetcher.submit(e.target, { method: "post" });
+
+    createNewEntryOnComplete();
   }
 
   return (
@@ -188,12 +215,26 @@ function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
             upvotes={entry.upvotes}
           />
         ))}
+
+        {fetcher.state === "submitting" ||
+        (Number(fetcher.formData?.get("columnId")) === id &&
+          Number(fetcher.formData?.get("order")) === newEntryOrder) ? (
+          <Entry
+            id={42069420} // Dummy ID since it'll never be used.
+            gifUrl={String(fetcher.formData?.get("gifUrl")) || undefined}
+            content={String(fetcher.formData?.get("content"))}
+            authorDisplayName={displayName}
+            upvotes={Number(fetcher.formData?.get("upvotes"))}
+          />
+        ) : null}
+
         {isCreatingNewEntry ? (
           <NewCardForm
             boardId={boardId}
             columnId={id}
             order={newEntryOrder}
-            onComplete={() => setIsCreatingNewEntry(false)}
+            handleSubmit={handleCreateNewEntry}
+            onComplete={() => createNewEntryOnComplete()}
           />
         ) : (
           <NewCardButton onClick={() => setIsCreatingNewEntry(true)} />
@@ -381,16 +422,16 @@ interface NewCardFormProps {
   boardId: number;
   columnId: number;
   order: number;
+  handleSubmit: (e: any) => void;
   onComplete: () => void;
 }
 function NewCardForm({
   boardId,
   columnId,
   order,
+  handleSubmit,
   onComplete,
 }: NewCardFormProps) {
-  const submit = useSubmit();
-
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const [gifUrl, setGifUrl] = useState("");
   const [displayedGifUrl, setDisplayedGifUrl] = useState("");
@@ -400,28 +441,8 @@ function NewCardForm({
     return () => clearTimeout(timeout);
   }, [gifUrl]);
 
-  function handleNewCard(e) {
-    e.preventDefault();
-
-    // TODO: Honestly not sure why we can't use a fetcher, and call
-    // fetcher.submit() here. I tried and tried, but couldn't invoke the action
-    // function. Perhaps it has something to do with there being more than one
-    // fetcher on this page? :shrug: Either way, this accomplishes the same
-    // thing.
-    submit(e.currentTarget);
-
-    // Being able to call this function on form submission is the whole reason
-    // we aren't using a fetcher.Form; we need a way to hook into the submission
-    // process.
-    onComplete();
-  }
-
   return (
-    <form
-      method="post"
-      onSubmit={handleNewCard}
-      className="flex flex-col gap-2"
-    >
+    <form method="post" onSubmit={handleSubmit} className="flex flex-col gap-2">
       <input type="hidden" name="_action" value="createEntry" />
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
