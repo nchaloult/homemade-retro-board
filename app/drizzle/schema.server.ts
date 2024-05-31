@@ -29,6 +29,7 @@ export const columns = sqliteTable("columns", {
 
 export const entries = sqliteTable("entries", {
   id: integer("id").primaryKey(),
+  gifUrl: text("gif_url"),
   content: text("content").notNull(),
   authorDisplayName: text("author_display_name").notNull(),
   upvotes: integer("upvotes", { mode: "number" }).notNull().default(0),

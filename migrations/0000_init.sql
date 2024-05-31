@@ -17,6 +17,7 @@ CREATE TABLE `columns` (
 --> statement-breakpoint
 CREATE TABLE `entries` (
 	`id` integer PRIMARY KEY NOT NULL,
+	`gif_url` text,
 	`content` text NOT NULL,
 	`author_display_name` text NOT NULL,
 	`upvotes` integer DEFAULT 0 NOT NULL,

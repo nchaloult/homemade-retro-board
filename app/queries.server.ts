@@ -24,15 +24,22 @@ export async function createColumn(
 }
 
 export async function createEntry(
+  gifUrl: string | undefined,
   content: string,
   authorDisplayName: string,
   boardId: number,
   columnId: number,
   order: number
 ) {
-  await db
-    .insert(entries)
-    .values({ content, authorDisplayName, boardId, columnId, order });
+  if (gifUrl === undefined) {
+    await db
+      .insert(entries)
+      .values({ content, authorDisplayName, boardId, columnId, order });
+  } else {
+    await db
+      .insert(entries)
+      .values({ gifUrl, content, authorDisplayName, boardId, columnId, order });
+  }
 }
 
 export async function getAllBoards() {
@@ -58,6 +65,7 @@ export async function doesBoardExist(externalId: string) {
 
 export interface Entry {
   id: number;
+  gifUrl?: string;
   content: string;
   authorDisplayName: string;
   upvotes: number;
@@ -87,6 +95,7 @@ export async function getBoard(externalId: string) {
   const entriesArray = await db
     .select({
       id: entries.id,
+      gifUrl: entries.gifUrl,
       content: entries.content,
       authorDisplayName: entries.authorDisplayName,
       upvotes: entries.upvotes,
@@ -133,6 +142,9 @@ export async function getBoard(externalId: string) {
         upvotes: entry.upvotes!,
         order: entry.order!,
       };
+      if (entry.gifUrl !== null) {
+        trimmedEntry.gifUrl = entry.gifUrl;
+      }
       curColumn.entries.push(trimmedEntry);
     }
   }

@@ -52,6 +52,10 @@ export async function action({ request }: ActionFunctionArgs) {
     const order = Number(formData.get("order"));
     await createColumn(name, boardId, order);
   } else if (action === "createEntry") {
+    let gifUrl: string | undefined = String(formData.get("gifUrl"));
+    if (gifUrl === "") {
+      gifUrl = undefined;
+    }
     const content = String(formData.get("content"));
     const boardId = Number(formData.get("boardId"));
     const columnId = Number(formData.get("columnId"));
@@ -63,7 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
       cookie.displayName || ANONYMOUS_AUTHOR_DISPLAY_NAME
     );
 
-    await createEntry(content, displayName, boardId, columnId, order);
+    await createEntry(gifUrl, content, displayName, boardId, columnId, order);
   }
 
   // This will technically be fired even if the _action field's value isn't
@@ -184,6 +188,7 @@ function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
           <Entry
             key={entry.id}
             id={entry.id}
+            gifUrl={entry.gifUrl}
             content={entry.content}
             authorDisplayName={entry.authorDisplayName}
             upvotes={entry.upvotes}
@@ -206,11 +211,18 @@ function Column({ id, boardId, name, entries, newEntryOrder }: ColumnProps) {
 
 interface EntryProps {
   id: number;
+  gifUrl?: string;
   content: string;
   authorDisplayName: string;
   upvotes: number;
 }
-function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
+function Entry({
+  gifUrl,
+  content,
+  authorDisplayName,
+  upvotes,
+  id,
+}: EntryProps) {
   const fetcher = useFetcher();
 
   const [isUpvoted, setIsUpvoted] = useState(false);
@@ -248,16 +260,24 @@ function Entry({ content, authorDisplayName, upvotes, id }: EntryProps) {
         "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition"
       }
     >
-      <div className="px-3 py-2">
+      <div className="flex flex-col gap-2 p-2">
+        {gifUrl !== undefined ? (
+          // eslint-disable-next-line jsx-a11y/img-redundant-alt
+          <img
+            src={gifUrl}
+            alt="User-provided GIF or image URL"
+            className="w-full rounded-lg"
+          />
+        ) : null}
         <p className="whitespace-pre-line">{content}</p>
       </div>
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
-      <div className="flex justify-between items-center px-3 py-1 bg-stone-100">
+      <div className="flex justify-between items-center px-2 py-1 bg-stone-100">
         <span className="text-stone-400">{authorDisplayName}</span>
         <form method="post" onSubmit={handleUpvote}>
           <button
             type="submit"
-            className={`flex items-center gap-1 px-2 py-1 -mr-2 rounded-full ${
+            className={`flex items-center gap-0.5 px-2 py-1 -mr-1.5 rounded-full ${
               isUpvoted ? "text-purple-800" : "text-stone-400"
             } outline-none hover:bg-stone-200 focus:bg-stone-200`}
           >
@@ -379,6 +399,13 @@ function NewCardForm({
   const submit = useSubmit();
 
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  const [gifUrl, setGifUrl] = useState("");
+  const [displayedGifUrl, setDisplayedGifUrl] = useState("");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setDisplayedGifUrl(gifUrl), 500);
+    return () => clearTimeout(timeout);
+  }, [gifUrl]);
 
   function handleNewCard(e) {
     e.preventDefault();
@@ -407,22 +434,42 @@ function NewCardForm({
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={order} />
 
-      <textarea
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
-        name="content"
-        onKeyDown={(e) => {
-          // Shift + Enter should add a new line, not submit the form.
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            addButtonRef.current?.click();
-          } else if (e.key === "Escape") {
-            // Close the dialog, and show the "New Card" button again.
-            onComplete();
-          }
-        }}
-        className="w-full p-2 rounded-xl border-2 border-stone-200 outline-none"
+      <input
+        type="url"
+        placeholder="Optional: GIF or image URL"
+        name="gifUrl"
+        value={gifUrl}
+        onChange={(e) => setGifUrl(e.target.value)}
+        className="w-full p-2 rounded-xl border-2 border-stone-200 outline-none placeholder:italic"
       />
+
+      <div className="flex flex-col gap-2 w-full p-2 rounded-xl bg-white border-2 border-stone-200">
+        {displayedGifUrl !== "" ? (
+          // eslint-disable-next-line jsx-a11y/img-redundant-alt
+          <img
+            src={displayedGifUrl}
+            alt="User-provided GIF or image URL"
+            className="w-full rounded-lg"
+          />
+        ) : null}
+        <textarea
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+          name="content"
+          placeholder="Content"
+          onKeyDown={(e) => {
+            // Shift + Enter should add a new line, not submit the form.
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              addButtonRef.current?.click();
+            } else if (e.key === "Escape") {
+              // Close the dialog, and show the "New Card" button again.
+              onComplete();
+            }
+          }}
+          className="w-full outline-none placeholder:italic"
+        />
+      </div>
       <div className="flex justify-between">
         <button
           type="button"
