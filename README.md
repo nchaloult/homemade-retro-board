@@ -1,36 +1,81 @@
-# Welcome to Remix + Vite!
-
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
+# Homemade Retro Board
 
 ## Development
 
-Run the Vite dev server:
-
-```shellscript
+```sh
 npm run dev
+```
+
+### Database-related chores
+
+You can poke around the database and run queries with the SQLite CLI.
+
+```sh
+sqlite3 sqlite.db
+
+# Run queries.
+> select * from entries where board_id = 1 order by `order` desc;
+# View schema-related info.
+> pragma table_info(entries);
+# Find out what else you can do.
+> .help
+```
+
+Seeding your local database is also done with the same CLI.
+
+```sh
+sqlite3 sqlite.db < seed.sql
 ```
 
 ## Deployment
 
-First, build your app for production:
+To deploy whatever code is currently sitting in this repo's root directory, run
+the following.
 
 ```sh
-npm run build
+fly deploy
 ```
 
-Then run the app in production mode:
+## Production environment management
+
+### Database-related chores
+
+You can pull down the production database file with Fly's wrapper around SFTP.
 
 ```sh
-npm start
+fly sftp get /data/sqlite.db
 ```
 
-Now you'll need to pick a host to deploy it to.
+Uploading a local file to the production volume is a bit weird. You use Fly's
+SFTP wrapper again, which has a strange command-line interface.
 
-### DIY
+```sh
+fly sftp shell
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
+>> put <path-to-local-file> <path-to-remote-destination>
+# Example: >> put sqlite.db /data/sqlite.db
 
-Make sure to deploy the output of `npm run build`
+# Exit with Ctrl+D
+```
 
-- `build/server`
-- `build/client`
+### Misc. helpful, unrelated commands
+
+```sh
+fly logs
+fly ssh console
+```
+
+In [`fly.toml`](fly.toml), the app is configured to be able to scale to zero
+instances. If you're trying to ssh in and it's timing out, no instances might be
+spun up. You can check this by running the following.
+
+```sh
+fly status
+```
+
+If the instance is down/stopped, and you want to do something with it, send it a
+request, and it'll come alive.
+
+```sh
+curl https://homemade-retro-board.fly.dev
+```
