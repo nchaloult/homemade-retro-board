@@ -238,7 +238,6 @@ function Entry({
     const newIsUpvoted = !isUpvoted;
 
     // Optimistic UI.
-    // TODO: Handle retracting this upon failures on the DB side.
     setIsUpvoted(newIsUpvoted);
 
     if (newIsUpvoted) {
