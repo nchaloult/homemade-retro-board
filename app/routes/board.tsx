@@ -1,10 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import {
-  useFetcher,
-  useLoaderData,
-  useRevalidator,
-  useSubmit,
-} from "@remix-run/react";
+import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { getDisplayName } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
@@ -82,8 +77,13 @@ export default function Board() {
   const { displayName, id, externalId, name, entries } =
     useLoaderData<typeof loader>();
 
+  const fetcher = useFetcher();
+
   const [isCreatingNewColumn, setIsCreatingNewColumn] = useState(false);
   const [hasCopiedBoardID, setHasCopiedBoardID] = useState(false);
+
+  const newColumnOrder =
+    entries.length === 0 ? 0 : entries[entries.length - 1].columnOrder + 1;
 
   const revalidator = useRevalidator();
   const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
@@ -97,6 +97,18 @@ export default function Board() {
 
     setHasCopiedBoardID(true);
     setTimeout(() => setHasCopiedBoardID(false), 3000);
+  }
+
+  function createNewColumnOnComplete() {
+    setIsCreatingNewColumn(false);
+  }
+
+  function handleCreateNewColumn(e) {
+    e.preventDefault();
+
+    fetcher.submit(e.target, { method: "post" });
+
+    createNewColumnOnComplete();
   }
 
   return (
@@ -134,15 +146,25 @@ export default function Board() {
             }
           />
         ))}
+
+        {fetcher.state === "submitting" ||
+        Number(fetcher.formData?.get("order")) === newColumnOrder ? (
+          <Column
+            displayName={displayName}
+            boardId={Number(fetcher.formData?.get("boardId"))}
+            id={42060420} // Dummy ID since it'll never be used.
+            name={String(fetcher.formData?.get("name"))}
+            entries={[]}
+            newEntryOrder={1}
+          />
+        ) : null}
+
         {isCreatingNewColumn ? (
           <NewColumnForm
             boardId={id}
-            newColumnOrder={
-              entries.length === 0
-                ? 0
-                : entries[entries.length - 1].columnOrder + 1
-            }
-            onComplete={() => setIsCreatingNewColumn(false)}
+            newColumnOrder={newColumnOrder}
+            handleSubmit={handleCreateNewColumn}
+            onComplete={() => createNewColumnOnComplete()}
           />
         ) : (
           <NewColumnButton onClick={() => setIsCreatingNewColumn(true)} />
@@ -343,37 +365,21 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
 interface NewColumnFormProps {
   boardId: number;
   newColumnOrder: number;
+  handleSubmit: (e: any) => void;
   onComplete: () => void;
 }
 function NewColumnForm({
   boardId,
   newColumnOrder,
+  handleSubmit,
   onComplete,
 }: NewColumnFormProps) {
-  const submit = useSubmit();
-
   const addButtonRef = useRef<HTMLButtonElement>(null);
-
-  function handleNewColumn(e) {
-    e.preventDefault();
-
-    // TODO: Honestly not sure why we can't use a fetcher, and call
-    // fetcher.submit() here. I tried and tried, but couldn't invoke the action
-    // function. Perhaps it has something to do with there being more than one
-    // fetcher on this page? :shrug: Either way, this accomplishes the same
-    // thing.
-    submit(e.currentTarget);
-
-    // Being able to call this function on form submission is the whole reason
-    // we aren't using a fetcher.Form; we need a way to hook into the submission
-    // process.
-    onComplete();
-  }
 
   return (
     <form
       method="post"
-      onSubmit={handleNewColumn}
+      onSubmit={handleSubmit}
       className="flex flex-col flex-none gap-2 w-80"
     >
       <input type="hidden" name="_action" value="createColumn" />
