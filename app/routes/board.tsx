@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { getDisplayName } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
 import { ClipboardIcon, PlusIcon, SortIcon, UpArrowIcon } from "~/icons";
@@ -103,10 +103,10 @@ export default function Board() {
     setIsCreatingNewColumn(false);
   }
 
-  function handleCreateNewColumn(e) {
+  function handleCreateNewColumn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.target, { method: "post" });
+    fetcher.submit(e.currentTarget, { method: "post" });
 
     createNewColumnOnComplete();
   }
@@ -193,7 +193,7 @@ function Column({
   const fetcher = useFetcher();
   const [isCreatingNewEntry, setIsCreatingNewEntry] = useState(false);
 
-  function handleSortFormSubmit(e) {
+  function handleSortFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     fetcher.submit({ columnId: id, _action: "sort" }, { method: "post" });
@@ -203,10 +203,10 @@ function Column({
     setIsCreatingNewEntry(false);
   }
 
-  function handleCreateNewEntry(e) {
+  function handleCreateNewEntry(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.target, { method: "post" });
+    fetcher.submit(e.currentTarget, { method: "post" });
 
     createNewEntryOnComplete();
   }
@@ -289,7 +289,7 @@ function Entry({
       : upvotes
     : upvotes;
 
-  function handleUpvote(e) {
+  function handleUpvote(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const newIsUpvoted = !isUpvoted;
@@ -365,7 +365,7 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
 interface NewColumnFormProps {
   boardId: number;
   newColumnOrder: number;
-  handleSubmit: (e: any) => void;
+  handleSubmit: FormEventHandler<HTMLFormElement>;
   onComplete: () => void;
 }
 function NewColumnForm({
@@ -428,7 +428,7 @@ interface NewCardFormProps {
   boardId: number;
   columnId: number;
   order: number;
-  handleSubmit: (e: any) => void;
+  handleSubmit: FormEventHandler<HTMLFormElement>;
   onComplete: () => void;
 }
 function NewCardForm({
