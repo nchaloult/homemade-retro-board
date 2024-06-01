@@ -171,7 +171,7 @@ function Column({
   const fetcher = useFetcher();
   const [isCreatingNewEntry, setIsCreatingNewEntry] = useState(false);
 
-  function handleSubmit(e) {
+  function handleSortFormSubmit(e) {
     e.preventDefault();
 
     fetcher.submit({ columnId: id, _action: "sort" }, { method: "post" });
@@ -193,7 +193,7 @@ function Column({
     <section className="w-80 flex-none">
       <form
         method="post"
-        onSubmit={handleSubmit}
+        onSubmit={handleSortFormSubmit}
         className="flex justify-between"
       >
         <h2 className="font-semibold text-xl mb-4">{name}</h2>
