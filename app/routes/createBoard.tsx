@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { createBoard } from "~/queries.server";
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -22,7 +22,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function CreateBoard() {
+  const navigation = useNavigation();
   const actionData = useActionData<typeof action>();
+
+  const isSubmitting = navigation.formAction === "/boards/create";
 
   return (
     <div className="h-svh flex flex-col justify-center items-center gap-8">
@@ -48,9 +51,10 @@ export default function CreateBoard() {
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
+            disabled={isSubmitting}
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:enabled:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[rgb(214_211_209)_0_4px] transition"
           >
-            Create
+            {isSubmitting ? "Creating..." : "Create"}
           </button>
         </Form>
       </main>
