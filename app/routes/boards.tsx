@@ -53,20 +53,22 @@ function BoardCard(props: BoardCardProps) {
   return (
     <Link
       to={`${props.externalId}`}
-      className={`p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[rgb(231_229_228)_0_4px] outline-none hover:scale-[105%] ${
+      className={`flex flex-col gap-4 justify-between p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[rgb(231_229_228)_0_4px] outline-none hover:scale-[105%] ${
         isRotatedClockwise ? "hover:rotate-1" : "hover:-rotate-1"
       } focus:border-stone-400 transition`}
       onMouseEnter={() => randomizeRotationDirection()}
     >
-      <h1 className="font-bold text-2xl mb-4">{props.name}</h1>
-      <p className="text-sm text-stone-400 italic">
-        Created on {new Date(props.createdAt).toLocaleString()}
-      </p>
-      {props.updatedAt && props.updatedAt !== null ? (
+      <h1 className="font-bold text-2xl">{props.name}</h1>
+      <div>
         <p className="text-sm text-stone-400 italic">
-          Last updated on {new Date(props.updatedAt).toLocaleString()}
+          Created on {new Date(props.createdAt).toLocaleString()}
         </p>
-      ) : null}
+        {props.updatedAt && props.updatedAt !== null ? (
+          <p className="text-sm text-stone-400 italic">
+            Last updated on {new Date(props.updatedAt).toLocaleString()}
+          </p>
+        ) : null}
+      </div>
     </Link>
   );
 }
