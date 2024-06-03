@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
 import { displayNameCookie } from "~/displayNameCookie.server";
 import { doesBoardExist } from "~/queries.server";
 
@@ -50,7 +50,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Landing() {
+  const navigation = useNavigation();
   const actionData = useActionData<typeof action>();
+
+  const isSubmitting = navigation.formAction === "/";
 
   return (
     <main className="h-svh flex flex-col gap-8 justify-center items-center">
@@ -86,9 +89,9 @@ export default function Landing() {
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:enabled:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[rgb(214_211_209)_0_4px] transition"
           >
-            Join Board
+            {isSubmitting ? "Joining..." : "Join Board"}
           </button>
         </Form>
         <Link
