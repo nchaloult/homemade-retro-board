@@ -58,6 +58,18 @@ fly sftp shell
 # Exit with Ctrl+D
 ```
 
+When the database file is changed, I think SQLite somehow flips the entire
+database into a read-only mode? Not sure if it copies all the contents into
+memory or something, but anyway... subsequent writes are blocked with the
+`SQLITE_READONLY_DBMOVED` error code, and your new changes aren't reflected.
+
+The only way to load in those new changes is with an application restart, I
+believe.
+
+```sh
+fly apps restart
+```
+
 ### Misc. helpful, unrelated commands
 
 ```sh
