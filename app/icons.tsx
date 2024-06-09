@@ -97,7 +97,7 @@ export function ClipboardIcon({ isCopied }: ClipboardIconProps) {
 export function EditIcon() {
   return (
     <svg
-      className="w-[16px] h-[16px]"
+      className="w-[16px] h-[16px] relative left-[1px]"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       width="24"
