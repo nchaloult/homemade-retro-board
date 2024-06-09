@@ -174,6 +174,10 @@ export async function downvoteEntry(id: number) {
     .where(eq(entries.id, id));
 }
 
+export async function updateColumn(id: number, name: string) {
+  await db.update(columns).set({ name }).where(eq(columns.id, id));
+}
+
 export async function updateEntry(
   id: number,
   content: string,
