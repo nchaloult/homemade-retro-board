@@ -174,6 +174,18 @@ export async function downvoteEntry(id: number) {
     .where(eq(entries.id, id));
 }
 
+export async function updateEntry(
+  id: number,
+  content: string,
+  gifUrl: string | undefined
+) {
+  if (gifUrl === undefined) {
+    await db.update(entries).set({ content }).where(eq(entries.id, id));
+  } else {
+    await db.update(entries).set({ content, gifUrl }).where(eq(entries.id, id));
+  }
+}
+
 export async function sortColumn(id: number) {
   // TODO: Look into using other parameters/string interpolation goodies that
   // Drizzle's "magic sql" operator supports.
