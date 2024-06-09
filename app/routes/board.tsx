@@ -11,6 +11,7 @@ import {
   downvoteEntry,
   getBoard,
   sortColumn,
+  updateEntry,
   upvoteEntry,
 } from "~/queries.server";
 import { useEventSource } from "remix-utils/sse/react";
@@ -62,6 +63,15 @@ export async function action({ request }: ActionFunctionArgs) {
       (await getDisplayName(request)) || ANONYMOUS_AUTHOR_DISPLAY_NAME;
 
     await createEntry(gifUrl, content, displayName, boardId, columnId, order);
+  } else if (action === "updateEntry") {
+    let gifUrl: string | undefined = String(formData.get("gifUrl"));
+    if (gifUrl === "") {
+      gifUrl = undefined;
+    }
+    const content = String(formData.get("content"));
+    const entryId = Number(formData.get("entryId"));
+
+    await updateEntry(entryId, content, gifUrl);
   }
 
   // This will technically be fired even if the _action field's value isn't
@@ -235,6 +245,8 @@ function Column({
             content={entry.content}
             authorDisplayName={entry.authorDisplayName}
             upvotes={entry.upvotes}
+            boardId={boardId}
+            columnId={id}
           />
         ))}
 
@@ -247,11 +259,13 @@ function Column({
             content={String(fetcher.formData?.get("content"))}
             authorDisplayName={displayName}
             upvotes={Number(fetcher.formData?.get("upvotes"))}
+            boardId={boardId}
+            columnId={id}
           />
         ) : null}
 
         {isCreatingNewEntry ? (
-          <NewCardForm
+          <CardForm
             boardId={boardId}
             columnId={id}
             order={newEntryOrder}
@@ -272,13 +286,17 @@ interface EntryProps {
   content: string;
   authorDisplayName: string;
   upvotes: number;
+  boardId: number;
+  columnId: number;
 }
 function Entry({
+  id,
   gifUrl,
   content,
   authorDisplayName,
   upvotes,
-  id,
+  boardId,
+  columnId,
 }: EntryProps) {
   const fetcher = useFetcher();
 
@@ -310,11 +328,41 @@ function Entry({
     }
   }
 
+  const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function editEntryOnComplete() {
+    setIsEditing(false);
+  }
+
+  function handleEditEntry(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    fetcher.submit(e.currentTarget, { method: "post" });
+
+    editEntryOnComplete();
+  }
+
+  if (isEditing) {
+    return (
+      <CardForm
+        boardId={boardId}
+        columnId={columnId}
+        handleSubmit={handleEditEntry}
+        onComplete={() => editEntryOnComplete()}
+        entryId={id}
+        currentContent={content}
+        currentGifUrl={gifUrl}
+      />
+    );
+  }
   return (
     <div
       className={
         "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition"
       }
+      onMouseEnter={() => setIsEditButtonVisible(true)}
+      onMouseLeave={() => setIsEditButtonVisible(false)}
     >
       <div className="flex flex-col gap-2 p-2">
         {gifUrl !== undefined ? (
@@ -330,17 +378,28 @@ function Entry({
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
       <div className="flex justify-between items-center px-2 py-1 bg-stone-100">
         <span className="text-stone-400">{authorDisplayName}</span>
-        <form method="post" onSubmit={handleUpvote}>
-          <button
-            type="submit"
-            className={`flex items-center gap-0.5 px-2 py-1 -mr-1.5 rounded-full ${
-              isUpvoted ? "text-purple-800" : "text-stone-400"
-            } outline-none hover:bg-stone-200 focus:bg-stone-200`}
-          >
-            <UpArrowIcon />
-            <span>{upvoteCount}</span>
-          </button>
-        </form>
+        <div className="flex items-center">
+          {isEditButtonVisible ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="px-2 py-1 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+            >
+              Edit
+            </button>
+          ) : null}
+          <form method="post" onSubmit={handleUpvote}>
+            <button
+              type="submit"
+              className={`flex items-center gap-0.5 px-2 py-1 -mr-1.5 rounded-full ${
+                isUpvoted ? "text-purple-800" : "text-stone-400"
+              } outline-none hover:bg-stone-200 focus:bg-stone-200`}
+            >
+              <UpArrowIcon />
+              <span>{upvoteCount}</span>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -424,23 +483,34 @@ function NewColumnForm({
   );
 }
 
-interface NewCardFormProps {
+interface CardFormProps {
   boardId: number;
   columnId: number;
-  order: number;
+  order?: number;
+
   handleSubmit: FormEventHandler<HTMLFormElement>;
   onComplete: () => void;
+
+  // The following exist if we're editing, and don't if we're creating a new entry.
+  entryId?: number;
+  currentContent?: string;
+  currentGifUrl?: string;
 }
-function NewCardForm({
+function CardForm({
   boardId,
   columnId,
   order,
   handleSubmit,
   onComplete,
-}: NewCardFormProps) {
-  const addButtonRef = useRef<HTMLButtonElement>(null);
-  const [gifUrl, setGifUrl] = useState("");
-  const [displayedGifUrl, setDisplayedGifUrl] = useState("");
+  entryId,
+  currentContent,
+  currentGifUrl,
+}: CardFormProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [gifUrl, setGifUrl] = useState(currentGifUrl || "");
+  const [displayedGifUrl, setDisplayedGifUrl] = useState(currentGifUrl || "");
+
+  const isEditingExistingEntry = entryId !== undefined;
 
   useEffect(() => {
     const timeout = setTimeout(() => setDisplayedGifUrl(gifUrl), 500);
@@ -449,16 +519,27 @@ function NewCardForm({
 
   return (
     <form method="post" onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <input type="hidden" name="_action" value="createEntry" />
+      {isEditingExistingEntry ? (
+        <input type="hidden" name="_action" value="updateEntry" />
+      ) : (
+        <input type="hidden" name="_action" value="createEntry" />
+      )}
+
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
-      <input type="hidden" name="order" value={order} />
+
+      {isEditingExistingEntry ? (
+        <input type="hidden" name="entryId" value={entryId} />
+      ) : null}
+      {!isEditingExistingEntry ? (
+        <input type="hidden" name="order" value={order} />
+      ) : null}
 
       <input
         type="url"
         placeholder="Optional: GIF or image URL"
         name="gifUrl"
-        value={gifUrl}
+        defaultValue={gifUrl}
         onChange={(e) => setGifUrl(e.target.value)}
         className="w-full p-2 rounded-xl border-2 border-stone-200 outline-none placeholder:italic"
       />
@@ -476,12 +557,13 @@ function NewCardForm({
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           name="content"
+          defaultValue={currentContent || ""}
           placeholder="Content"
           onKeyDown={(e) => {
             // Shift + Enter should add a new line, not submit the form.
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              addButtonRef.current?.click();
+              buttonRef.current?.click();
             } else if (e.key === "Escape") {
               // Close the dialog, and show the "New Card" button again.
               onComplete();
@@ -499,11 +581,11 @@ function NewCardForm({
           Cancel
         </button>
         <button
-          ref={addButtonRef}
+          ref={buttonRef}
           type="submit"
           className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
         >
-          Add
+          {entryId ? "Edit" : "Add"}
         </button>
       </div>
     </form>
