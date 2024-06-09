@@ -3,7 +3,13 @@ import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { getDisplayName } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
-import { ClipboardIcon, PlusIcon, SortIcon, UpArrowIcon } from "~/icons";
+import {
+  ClipboardIcon,
+  EditIcon,
+  PlusIcon,
+  SortIcon,
+  UpArrowIcon,
+} from "~/icons";
 import type { Entry } from "~/queries.server";
 import {
   createColumn,
@@ -383,9 +389,9 @@ function Entry({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="px-2 py-1 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+              className="flex items-center gap-0.5 p-2 rounded-full text-stone-400 outline-none hover:bg-stone-200"
             >
-              Edit
+              <EditIcon />
             </button>
           ) : null}
           <form method="post" onSubmit={handleUpvote}>
