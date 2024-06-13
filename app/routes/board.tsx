@@ -605,6 +605,18 @@ function CardForm({
     return () => clearTimeout(timeout);
   }, [gifUrl]);
 
+  function moveCaretToTheEnd(e: React.FocusEvent<HTMLTextAreaElement>) {
+    // Clear out the value, then paste it back in as if the user typed it all
+    // out again themselves. This is what "moves" the caret to the end of the
+    // textarea's content.
+    const temp = e.target.value;
+    e.target.value = "";
+    e.target.value = temp;
+
+    // Scroll the textarea box down to the bottom.
+    e.target.scrollTop = e.target.scrollHeight;
+  }
+
   return (
     <form
       method="post"
@@ -648,6 +660,7 @@ function CardForm({
         <textarea
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
+          onFocus={moveCaretToTheEnd}
           name="content"
           defaultValue={currentContent || ""}
           placeholder="Content"
