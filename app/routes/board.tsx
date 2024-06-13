@@ -17,6 +17,7 @@ import {
   downvoteEntry,
   getBoard,
   sortColumn,
+  updateColumn,
   updateEntry,
   upvoteEntry,
 } from "~/queries.server";
@@ -70,14 +71,19 @@ export async function action({ request }: ActionFunctionArgs) {
 
     await createEntry(gifUrl, content, displayName, boardId, columnId, order);
   } else if (action === "updateEntry") {
-    let gifUrl: string | undefined = String(formData.get("gifUrl"));
-    if (gifUrl === "") {
-      gifUrl = undefined;
+    let newGifUrl: string | undefined = String(formData.get("gifUrl"));
+    if (newGifUrl === "") {
+      newGifUrl = undefined;
     }
-    const content = String(formData.get("content"));
+    const newContent = String(formData.get("content"));
     const entryId = Number(formData.get("entryId"));
 
-    await updateEntry(entryId, content, gifUrl);
+    await updateEntry(entryId, newContent, newGifUrl);
+  } else if (action === "updateColumn") {
+    const newName = String(formData.get("name"));
+    const columnId = Number(formData.get("id"));
+
+    await updateColumn(columnId, newName);
   }
 
   // This will technically be fired even if the _action field's value isn't
@@ -176,7 +182,7 @@ export default function Board() {
         ) : null}
 
         {isCreatingNewColumn ? (
-          <NewColumnForm
+          <ColumnForm
             boardId={id}
             newColumnOrder={newColumnOrder}
             handleSubmit={handleCreateNewColumn}
@@ -227,14 +233,54 @@ function Column({
     createNewEntryOnComplete();
   }
 
-  return (
-    <section className="w-80 flex-none">
+  const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function updateColumnOnComplete() {
+    setIsEditing(false);
+  }
+
+  function handleUpdateColumn(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    fetcher.submit(e.currentTarget, { method: "post" });
+
+    updateColumnOnComplete();
+  }
+
+  let columnHead;
+  if (isEditing) {
+    columnHead = (
+      <ColumnForm
+        boardId={boardId}
+        id={id}
+        handleSubmit={handleUpdateColumn}
+        onComplete={() => updateColumnOnComplete()}
+        currentName={name}
+      />
+    );
+  } else {
+    columnHead = (
       <form
         method="post"
         onSubmit={handleSortFormSubmit}
         className="flex justify-between"
+        onMouseEnter={() => setIsEditButtonVisible(true)}
+        onMouseLeave={() => setIsEditButtonVisible(false)}
       >
-        <h2 className="font-semibold text-xl mb-4">{name}</h2>
+        <div className="w-full flex">
+          <h2 className="font-semibold text-xl mb-4">{name}</h2>
+          {isEditButtonVisible ? (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-0.5 p-1 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+            >
+              <EditIcon />
+              <span>Edit</span>
+            </button>
+          ) : null}
+        </div>
         <button
           type="submit"
           className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
@@ -242,6 +288,12 @@ function Column({
           <SortIcon />
         </button>
       </form>
+    );
+  }
+
+  return (
+    <section className="w-80 flex-none">
+      {columnHead}
       <div className="flex flex-col gap-2">
         {entries.map((entry) => (
           <Entry
@@ -427,19 +479,27 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
   );
 }
 
-interface NewColumnFormProps {
+interface ColumnFormProps {
   boardId: number;
-  newColumnOrder: number;
+  newColumnOrder?: number;
   handleSubmit: FormEventHandler<HTMLFormElement>;
   onComplete: () => void;
+
+  // The following exist if we're editing, and don't if we're creating a new entry.
+  id?: number;
+  currentName?: string;
 }
-function NewColumnForm({
+function ColumnForm({
   boardId,
   newColumnOrder,
   handleSubmit,
   onComplete,
-}: NewColumnFormProps) {
-  const addButtonRef = useRef<HTMLButtonElement>(null);
+  id,
+  currentName,
+}: ColumnFormProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const isEditingExistingColumn = id !== undefined;
 
   return (
     <form
@@ -447,21 +507,33 @@ function NewColumnForm({
       onSubmit={handleSubmit}
       className="flex flex-col flex-none gap-2 w-80"
     >
-      <input type="hidden" name="_action" value="createColumn" />
+      {isEditingExistingColumn ? (
+        <input type="hidden" name="_action" value="updateColumn" />
+      ) : (
+        <input type="hidden" name="_action" value="createColumn" />
+      )}
+
       <input type="hidden" name="boardId" value={boardId} />
-      <input type="hidden" name="order" value={newColumnOrder} />
+
+      {isEditingExistingColumn ? (
+        <input type="hidden" name="id" value={id} />
+      ) : null}
+      {!isEditingExistingColumn ? (
+        <input type="hidden" name="order" value={newColumnOrder} />
+      ) : null}
 
       <input
         type="text"
         name="name"
         placeholder="Name"
+        defaultValue={currentName || ""}
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         onKeyDown={(e) => {
           // Shift + Enter should add a new line, not submit the form.
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            addButtonRef.current?.click();
+            buttonRef.current?.click();
           } else if (e.key === "Escape") {
             // Close the dialog, and show the "New Card" button again.
             onComplete();
@@ -478,11 +550,11 @@ function NewColumnForm({
           Cancel
         </button>
         <button
-          ref={addButtonRef}
+          ref={buttonRef}
           type="submit"
           className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
         >
-          Add
+          {isEditingExistingColumn ? "Edit" : "Add"}
         </button>
       </div>
     </form>
