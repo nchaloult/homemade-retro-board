@@ -271,7 +271,12 @@ function Column({
           onMouseEnter={() => setIsEditButtonVisible(true)}
           onMouseLeave={() => setIsEditButtonVisible(false)}
         >
-          <h2 className="flex grow font-semibold text-xl mb-4">{name}</h2>
+          <h2 className="flex grow font-semibold text-xl mb-4">
+            {/* Optimistic UI. */}
+            {Number(fetcher.formData?.get("id")) === id
+              ? String(fetcher.formData?.get("name"))
+              : name}
+          </h2>
           {isEditButtonVisible ? (
             <button
               type="button"
@@ -432,7 +437,11 @@ function Entry({
             className="w-full rounded-lg"
           />
         ) : null}
-        <p className="whitespace-pre-line">{content}</p>
+        <p className="whitespace-pre-line">
+          {Number(fetcher.formData?.get("entryId")) === id
+            ? String(fetcher.formData?.get("content"))
+            : content}
+        </p>
       </div>
       <hr className="h-0.5 bg-stone-200 border-0 rounded" />
       <div className="flex justify-between items-center px-2 py-1 bg-stone-100">
