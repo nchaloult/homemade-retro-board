@@ -264,20 +264,19 @@ function Column({
       <form
         method="post"
         onSubmit={handleSortFormSubmit}
-        className="flex justify-between"
+        className="flex justify-between space-x-2"
         onMouseEnter={() => setIsEditButtonVisible(true)}
         onMouseLeave={() => setIsEditButtonVisible(false)}
       >
-        <div className="w-full flex">
-          <h2 className="font-semibold text-xl mb-4">{name}</h2>
+        <div className="w-full flex items-start">
+          <h2 className="flex grow font-semibold text-xl mb-4">{name}</h2>
           {isEditButtonVisible ? (
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-0.5 p-1 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+              className="flex items-center p-2 rounded-full text-stone-400 outline-none hover:bg-stone-200"
             >
               <EditIcon />
-              <span>Edit</span>
             </button>
           ) : null}
         </div>
@@ -505,7 +504,7 @@ function ColumnForm({
     <form
       method="post"
       onSubmit={handleSubmit}
-      className="flex flex-col flex-none gap-2 w-80"
+      className="flex flex-col flex-none gap-2 w-80 mb-3"
     >
       {isEditingExistingColumn ? (
         <input type="hidden" name="_action" value="updateColumn" />
@@ -596,7 +595,11 @@ function CardForm({
   }, [gifUrl]);
 
   return (
-    <form method="post" onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form
+      method="post"
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 mb-1"
+    >
       {isEditingExistingEntry ? (
         <input type="hidden" name="_action" value="updateEntry" />
       ) : (
