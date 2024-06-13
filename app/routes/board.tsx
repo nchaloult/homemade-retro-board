@@ -265,10 +265,12 @@ function Column({
         method="post"
         onSubmit={handleSortFormSubmit}
         className="flex justify-between space-x-2"
-        onMouseEnter={() => setIsEditButtonVisible(true)}
-        onMouseLeave={() => setIsEditButtonVisible(false)}
       >
-        <div className="w-full flex items-start">
+        <div
+          className="w-full flex items-start"
+          onMouseEnter={() => setIsEditButtonVisible(true)}
+          onMouseLeave={() => setIsEditButtonVisible(false)}
+        >
           <h2 className="flex grow font-semibold text-xl mb-4">{name}</h2>
           {isEditButtonVisible ? (
             <button
