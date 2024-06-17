@@ -289,7 +289,7 @@ function Column({
         </div>
         <button
           type="submit"
-          className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+          className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
         >
           <SortIcon />
         </button>
@@ -461,7 +461,7 @@ function Entry({
               type="submit"
               className={`flex items-center gap-0.5 px-2 py-1 -mr-1.5 rounded-full ${
                 isUpvoted ? "text-purple-800" : "text-stone-400"
-              } outline-none hover:bg-stone-200 focus:bg-stone-200`}
+              } outline-none hover:bg-stone-200`}
             >
               <UpArrowIcon />
               <span>{upvoteCount}</span>
