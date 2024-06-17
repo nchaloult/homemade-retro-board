@@ -3,7 +3,6 @@ CREATE TABLE `boards` (
 	`external_id` text NOT NULL,
 	`name` text NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	`updated_at` integer DEFAULT (unixepoch()),
 	`deleted_at` integer
 );
 --> statement-breakpoint

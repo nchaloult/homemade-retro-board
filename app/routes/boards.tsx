@@ -24,7 +24,6 @@ export default function Boards() {
               externalId={board.externalId}
               name={board.name}
               createdAt={board.createdAt}
-              updatedAt={board.updatedAt}
             />
           ))
         ) : (
@@ -39,7 +38,6 @@ interface BoardCardProps {
   externalId: string;
   name: string;
   createdAt: string;
-  updatedAt?: string | null;
 }
 function BoardCard(props: BoardCardProps) {
   const [isRotatedClockwise, setIsRotatedClockwise] = useState(
@@ -59,16 +57,9 @@ function BoardCard(props: BoardCardProps) {
       onMouseEnter={() => randomizeRotationDirection()}
     >
       <h1 className="font-bold text-2xl">{props.name}</h1>
-      <div>
-        <p className="text-sm text-stone-400 italic">
-          Created on {new Date(props.createdAt).toLocaleString()}
-        </p>
-        {props.updatedAt && props.updatedAt !== null ? (
-          <p className="text-sm text-stone-400 italic">
-            Last updated on {new Date(props.updatedAt).toLocaleString()}
-          </p>
-        ) : null}
-      </div>
+      <p className="text-sm text-stone-400 italic">
+        Created on {new Date(props.createdAt).toLocaleString()}
+      </p>
     </Link>
   );
 }

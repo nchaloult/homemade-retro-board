@@ -8,9 +8,6 @@ export const boards = sqliteTable("boards", {
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).default(
-    sql`(unixepoch())`
-  ),
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 

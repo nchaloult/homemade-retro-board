@@ -48,7 +48,6 @@ export async function getAllBoards() {
       externalId: boards.externalId,
       name: boards.name,
       createdAt: boards.createdAt,
-      updatedAt: boards.updatedAt,
     })
     .from(boards)
     .where(isNull(boards.deletedAt));
