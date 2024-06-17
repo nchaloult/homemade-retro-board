@@ -438,7 +438,9 @@ function Entry({
           />
         ) : null}
         <p className="whitespace-pre-line">
-          {Number(fetcher.formData?.get("entryId")) === id
+          {String(fetcher.formData?.get("_action")) !== "upvote" &&
+          String(fetcher.formData?.get("_action")) !== "downvote" &&
+          Number(fetcher.formData?.get("entryId")) === id
             ? String(fetcher.formData?.get("content"))
             : content}
         </p>
