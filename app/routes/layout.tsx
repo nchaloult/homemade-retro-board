@@ -13,14 +13,11 @@ export default function Layout() {
   return (
     <>
       <div className="px-8">
-        <nav className="flex justify-between p-4 border-b-2 border-stone-200">
-          <Link
-            to="/"
-            className="text-sm text-stone-400 font-bold hover:underline"
-          >
+        <nav className="flex justify-between p-4 text-stone-400 border-b-2 border-stone-200 dark:border-stone-700">
+          <Link to="/" className="text-sm font-bold hover:underline">
             Homemade Retro Board
           </Link>
-          <span className="text-sm text-stone-400 font-bold">
+          <span className="text-sm font-bold">
             {displayName || "Display name not set."}
           </span>
         </nav>

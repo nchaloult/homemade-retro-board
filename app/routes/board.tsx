@@ -143,8 +143,10 @@ export default function Board() {
           disabled={hasCopiedBoardID}
           onClick={() => handleBoardIDCopyClick()}
           className={`w-fit flex items-center gap-2 px-3 py-1 -ml-3 rounded-full font-semibold ${
-            hasCopiedBoardID ? "text-purple-800" : "text-stone-400"
-          } outline-none hover:bg-stone-200 focus:bg-stone-200`}
+            hasCopiedBoardID
+              ? "text-purple-800 dark:text-purple-600"
+              : "text-stone-400"
+          } outline-none hover:bg-stone-200 dark:hover:bg-stone-700 focus:bg-stone-200 dark:focus:bg-stone-700`}
         >
           <ClipboardIcon isCopied={hasCopiedBoardID} />
           Board ID: {externalId}
@@ -281,7 +283,7 @@ function Column({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="flex items-center p-2 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+              className="flex items-center p-2 rounded-full text-stone-400 outline-none hover:bg-stone-200 dark:hover:bg-stone-700"
             >
               <EditIcon />
             </button>
@@ -289,7 +291,7 @@ function Column({
         </div>
         <button
           type="submit"
-          className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+          className="h-min flex justify-center items-center gap-1 p-1 rounded-lg bg-stone-200 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none dark:bg-stone-600 dark:border-stone-700 dark:shadow-[rgb(68_64_60)_0_4px] hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 dark:hover:bg-stone-500 dark:hover:shadow-[rgb(68_64_60)_0_8px] active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(68_64_60)_0_4px] transition"
         >
           <SortIcon />
         </button>
@@ -423,7 +425,7 @@ function Entry({
   return (
     <div
       className={
-        "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none transition"
+        "overflow-hidden rounded-xl bg-white border-2 border-stone-200 outline-none dark:bg-stone-600 dark:border-stone-700 transition"
       }
       onMouseEnter={() => setIsEditButtonVisible(true)}
       onMouseLeave={() => setIsEditButtonVisible(false)}
@@ -445,15 +447,15 @@ function Entry({
             : content}
         </p>
       </div>
-      <hr className="h-0.5 bg-stone-200 border-0 rounded" />
-      <div className="flex justify-between items-center px-2 py-1 bg-stone-100">
-        <span className="text-stone-400">{authorDisplayName}</span>
+      <hr className="h-0.5 bg-stone-200 border-0 rounded dark:bg-stone-700" />
+      <div className="flex justify-between items-center px-2 py-1 bg-stone-100 text-stone-400 dark:bg-[#3a3632]">
+        <span>{authorDisplayName}</span>
         <div className="flex items-center">
           {isEditButtonVisible ? (
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-0.5 p-2 rounded-full text-stone-400 outline-none hover:bg-stone-200"
+              className="flex items-center gap-0.5 p-2 rounded-full outline-none hover:bg-stone-200 dark:hover:bg-stone-600"
             >
               <EditIcon />
             </button>
@@ -462,8 +464,8 @@ function Entry({
             <button
               type="submit"
               className={`flex items-center gap-0.5 px-2 py-1 -mr-1.5 rounded-full ${
-                isUpvoted ? "text-purple-800" : "text-stone-400"
-              } outline-none hover:bg-stone-200`}
+                isUpvoted ? "text-purple-800 dark:text-purple-600" : ""
+              } outline-none hover:bg-stone-200 dark:hover:bg-stone-600`}
             >
               <UpArrowIcon />
               <span>{upvoteCount}</span>
@@ -483,7 +485,7 @@ function NewCardButton({ onClick }: NewCardButtonProps) {
     <button
       type="button"
       onClick={() => onClick()}
-      className="flex justify-center items-center gap-1 px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+      className="flex justify-center items-center gap-1 px-4 py-2 rounded-lg bg-stone-200 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none dark:bg-stone-600 dark:border-stone-700 dark:shadow-[rgb(68_64_60)_0_4px] hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 dark:hover:bg-stone-500 dark:hover:shadow-[rgb(68_64_60)_0_8px] focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 dark:focus:bg-stone-500 dark:focus:shadow-[rgb(68_64_60)_0_8px] active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(68_64_60)_0_4px] transition"
     >
       <PlusIcon />
       <span>New Card</span>
@@ -551,20 +553,20 @@ function ColumnForm({
             onComplete();
           }
         }}
-        className="w-full p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none focus:border-stone-400 transition"
+        className="w-full p-2 rounded-xl font-semibold border-2 border-stone-200 outline-none placeholder:italic dark:bg-stone-700 dark:border-stone-600 dark:placeholder:text-stone-400 focus:border-stone-400"
       />
       <div className="flex justify-between">
         <button
           type="button"
           onClick={() => onComplete()}
-          className="px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+          className="px-4 py-2 rounded-lg bg-stone-200 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none dark:bg-stone-600 dark:border-stone-700 dark:shadow-[rgb(68_64_60)_0_4px] hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 dark:hover:bg-stone-500 dark:hover:shadow-[rgb(68_64_60)_0_8px] focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 dark:focus:bg-stone-500 dark:focus:shadow-[rgb(68_64_60)_0_8px] active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(68_64_60)_0_4px] transition"
         >
           Cancel
         </button>
         <button
           ref={buttonRef}
           type="submit"
-          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
+          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none dark:bg-purple-600 dark:border-purple-900 dark:shadow-[rgb(88_28_135)_0_4px] hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[rgb(88_28_135)_0_8px] focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[rgb(88_28_135)_0_8px] active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(88_28_135)_0_4px] transition"
         >
           {isEditingExistingColumn ? "Edit" : "Add"}
         </button>
@@ -647,10 +649,10 @@ function CardForm({
         name="gifUrl"
         defaultValue={gifUrl}
         onChange={(e) => setGifUrl(e.target.value)}
-        className="w-full p-2 rounded-xl border-2 border-stone-200 outline-none placeholder:italic"
+        className="w-full p-2 rounded-xl border-2 border-stone-200 outline-none placeholder:italic dark:bg-stone-700 dark:border-stone-600 dark:placeholder:text-stone-400 focus:border-stone-400"
       />
 
-      <div className="flex flex-col gap-2 w-full p-2 rounded-xl bg-white border-2 border-stone-200">
+      <div className="flex flex-col gap-2 w-full p-2 rounded-xl bg-white border-2 border-stone-200 dark:bg-stone-700 dark:border-stone-600 focus-within:border-stone-400">
         {displayedGifUrl !== "" ? (
           // eslint-disable-next-line jsx-a11y/img-redundant-alt
           <img
@@ -676,21 +678,21 @@ function CardForm({
               onComplete();
             }
           }}
-          className="w-full outline-none placeholder:italic"
+          className="w-full outline-none placeholder:italic dark:bg-stone-700 dark:placeholder:text-stone-400"
         />
       </div>
       <div className="flex justify-between">
         <button
           type="button"
           onClick={() => onComplete()}
-          className="px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+          className="px-4 py-2 rounded-lg bg-stone-200 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none dark:bg-stone-600 dark:border-stone-700 dark:shadow-[rgb(68_64_60)_0_4px] hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 dark:hover:bg-stone-500 dark:hover:shadow-[rgb(68_64_60)_0_8px] focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 dark:focus:bg-stone-500 dark:focus:shadow-[rgb(68_64_60)_0_8px] active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(68_64_60)_0_4px] transition"
         >
           Cancel
         </button>
         <button
           ref={buttonRef}
           type="submit"
-          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 transition"
+          className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none dark:bg-purple-600 dark:border-purple-900 dark:shadow-[rgb(88_28_135)_0_4px] hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[rgb(88_28_135)_0_8px] focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[rgb(88_28_135)_0_8px] active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(88_28_135)_0_4px] transition"
         >
           {entryId ? "Edit" : "Add"}
         </button>
@@ -707,7 +709,7 @@ function NewColumnButton({ onClick }: NewColumnButtonProps) {
     <button
       type="button"
       onClick={() => onClick()}
-      className="w-42 h-32 flex flex-none justify-center items-center gap-1 px-4 py-2 rounded-lg bg-stone-200 text-stone-900 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 transition"
+      className="w-42 h-32 flex flex-none justify-center items-center gap-1 px-4 py-2 rounded-lg bg-stone-200 font-semibold border-2 border-stone-300 shadow-[rgb(214_211_209)_0_4px] outline-none dark:bg-stone-600 dark:border-stone-700 dark:shadow-[rgb(68_64_60)_0_4px] hover:bg-stone-100 hover:shadow-[rgb(214_211_209)_0_8px] hover:-translate-y-1 dark:hover:bg-stone-500 dark:hover:shadow-[rgb(68_64_60)_0_8px] focus:bg-stone-100 focus:shadow-[rgb(214_211_209)_0_8px] focus:-translate-y-1 dark:focus:bg-stone-500 dark:focus:shadow-[rgb(68_64_60)_0_8px] active:shadow-[rgb(214_211_209)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(68_64_60)_0_4px] transition"
     >
       <PlusIcon />
       <span>New Column</span>
