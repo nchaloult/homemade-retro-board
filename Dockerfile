@@ -1,13 +1,20 @@
-FROM node:26-bookworm-slim AS base
+# Why not node:26-bookworm-slim?
+# better-sqlite3@13 ships a prebuild that needs GLIBC ≥ 2.38.
+# node:26-bookworm-slim is Debian 12 with GLIBC 2.36, so
+# `$ drizzle-kit migrate` failed loading the native binding.
+#
+# Fix: Switch the base image to node:26-slim
+# (Debian 13 / Trixie, GLIBC 2.41)
+FROM node:26-slim AS base
 
 WORKDIR /app
 ENV NODE_ENV="production"
 
 
-FROM base as build
+FROM base AS build
 
-# Install packages needed to build node modules. Seems to be a Vite-only
-# necessity.
+# Install packages needed to build node modules (e.g. better-sqlite3) when
+# prebuilds are unavailable for the current platform.
 RUN apt-get update -qq && \
     apt-get install -y build-essential pkg-config python-is-python3
 
