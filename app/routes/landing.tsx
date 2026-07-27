@@ -1,10 +1,15 @@
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+} from "react-router";
+import type { Route } from "./+types/landing";
 import { displayNameCookie } from "~/displayNameCookie.server";
 import { doesBoardExist } from "~/queries.server";
 
-export const meta: MetaFunction = () => {
+export const meta: Route.MetaFunction = () => {
   return [
     { title: "Homemade Retro Board" },
     {
@@ -15,7 +20,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const errors: any = {};
 
@@ -31,12 +36,12 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   if (Object.keys(errors).length > 0) {
-    return json({ errors, displayName });
+    return { errors, displayName };
   }
 
   if (!(await doesBoardExist(externalId))) {
     errors.externalId = "Board does not exist.";
-    return json({ errors, displayName });
+    return { errors, displayName };
   }
 
   // Store the provided display name in local storage.

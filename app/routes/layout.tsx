@@ -1,10 +1,10 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "react-router";
+import type { Route } from "./+types/layout";
 import { getDisplayName } from "~/displayNameCookie.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const displayName = await getDisplayName(request);
-  return json({ displayName });
+  return { displayName };
 }
 
 export default function Layout() {

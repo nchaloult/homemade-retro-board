@@ -1,6 +1,11 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useFetcher, useLoaderData, useRevalidator } from "@remix-run/react";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
+import {
+  useFetcher,
+  useLoaderData,
+  useRevalidator,
+} from "react-router";
+import { useEventSource } from "remix-utils/sse/react";
+import type { Route } from "./+types/board";
 import { getDisplayName } from "~/displayNameCookie.server";
 import { emitter } from "~/emitter.server";
 import {
@@ -21,11 +26,10 @@ import {
   updateEntry,
   upvoteEntry,
 } from "~/queries.server";
-import { useEventSource } from "remix-utils/sse/react";
 
 const ANONYMOUS_AUTHOR_DISPLAY_NAME = "Anonymous";
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const externalId = params.externalId;
   if (externalId === undefined || externalId.length === 0) {
     throw new Response("Board ID not found", { status: 400 });
@@ -35,10 +39,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const displayName =
     (await getDisplayName(request)) || ANONYMOUS_AUTHOR_DISPLAY_NAME;
 
-  return json({ displayName, id, externalId, name, entries });
+  return { displayName, id, externalId, name, entries };
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
   const action = formData.get("_action");
@@ -87,7 +91,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   // This will technically be fired even if the _action field's value isn't
-  // equal to any of the ones we handle above. That's alright, though — all that
+  // equal to any of the ones we handle above. That's alright, though - all that
   // will happen is every tab will call the GET /boards/:externalId endpoint
   // again.
   emitter.emit("boardUpdate");
@@ -111,8 +115,11 @@ export default function Board() {
   const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
     event: "board-update",
   });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => revalidator.revalidate(), [lastEntryId]);
+  useEffect(() => {
+    void revalidator.revalidate();
+    // Only revalidate when a new SSE event arrives.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastEntryId]);
 
   async function handleBoardIDCopyClick() {
     await navigator.clipboard.writeText(externalId);

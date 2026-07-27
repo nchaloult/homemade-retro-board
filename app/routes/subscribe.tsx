@@ -1,8 +1,8 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
 import { eventStream } from "remix-utils/sse/server";
+import type { Route } from "./+types/subscribe";
 import { emitter } from "~/emitter.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   return eventStream(request.signal, function setup(send) {
     function handleBoardUpdate() {
       // data field's contents don't matter; they aren't used anywhere. They

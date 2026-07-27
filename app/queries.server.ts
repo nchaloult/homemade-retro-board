@@ -1,11 +1,8 @@
 import { asc, eq, isNull, sql } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
-import nanoidDictionaryPkg from "nanoid-dictionary";
+import { nolookalikesSafe } from "nanoid-dictionary";
 import { db } from "~/drizzle/config.server";
 import { boards, columns, entries } from "~/drizzle/schema.server";
-
-// Necessary because of CommonJS package compatibility with Vite.
-const { nolookalikesSafe } = nanoidDictionaryPkg;
 
 const generateNanoId = customAlphabet(nolookalikesSafe, 10);
 

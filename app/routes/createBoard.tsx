@@ -1,8 +1,13 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import {
+  Form,
+  redirect,
+  useActionData,
+  useNavigation,
+} from "react-router";
+import type { Route } from "./+types/createBoard";
 import { createBoard } from "~/queries.server";
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const errors: any = {};
 
@@ -14,7 +19,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   if (Object.keys(errors).length > 0) {
-    return json({ errors, name });
+    return { errors, name };
   }
 
   const externalId = await createBoard(name);

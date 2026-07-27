@@ -1,11 +1,10 @@
-import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "react-router";
 import { useState } from "react";
 import { getAllBoards } from "~/queries.server";
 
 export async function loader() {
   const boards = await getAllBoards();
-  return json({ boards });
+  return { boards };
 }
 
 export default function Boards() {
@@ -37,11 +36,11 @@ export default function Boards() {
 interface BoardCardProps {
   externalId: string;
   name: string;
-  createdAt: string;
+  createdAt: Date;
 }
 function BoardCard(props: BoardCardProps) {
   const [isRotatedClockwise, setIsRotatedClockwise] = useState(
-    Math.random() > 0.5
+    () => Math.random() > 0.5
   );
 
   function randomizeRotationDirection() {
