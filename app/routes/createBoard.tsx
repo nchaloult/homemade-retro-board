@@ -57,7 +57,7 @@ export default function CreateBoard() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[rgb(59_7_100)_0_4px] outline-none dark:bg-purple-600 dark:border-purple-900 dark:shadow-[rgb(88_28_135)_0_4px] hover:bg-purple-700 hover:shadow-[rgb(59_7_100)_0_8px] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[rgb(88_28_135)_0_8px] focus:bg-purple-700 focus:shadow-[rgb(59_7_100)_0_8px] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[rgb(88_28_135)_0_8px] active:shadow-[rgb(59_7_100)_0_4px] active:translate-y-0 dark:active:shadow-[rgb(88_28_135)_0_4px] disabled:translate-y-0 disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[rgb(214_211_209)_0_4px] transition"
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[0_4px_rgb(59_7_100)] outline-none dark:bg-purple-600 dark:border-purple-900 dark:shadow-[0_4px_rgb(88_28_135)] hover:bg-purple-700 hover:shadow-[0_8px_rgb(59_7_100)] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[0_8px_rgb(88_28_135)] focus:bg-purple-700 focus:shadow-[0_8px_rgb(59_7_100)] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[0_8px_rgb(88_28_135)] active:shadow-[0_4px_rgb(59_7_100)] active:translate-y-0 dark:active:shadow-[0_4px_rgb(88_28_135)] disabled:translate-y-0 disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[0_4px_rgb(214_211_209)] transition"
           >
             {isSubmitting ? "Creating..." : "Create"}
           </button>
