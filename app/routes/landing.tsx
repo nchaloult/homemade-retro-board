@@ -21,7 +21,7 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function action({ request }: Route.ActionArgs) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   const errors: any = {};
 
   const formData = await request.formData();
@@ -75,7 +75,7 @@ export default function Landing() {
             id="externalId"
             name="externalId"
             placeholder="Board ID"
-            // eslint-disable-next-line jsx-a11y/no-autofocus
+            // oxlint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none dark:bg-stone-700 dark:border-stone-600 dark:placeholder:text-stone-400 focus:border-stone-400 transition"
           />

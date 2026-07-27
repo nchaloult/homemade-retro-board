@@ -45,22 +45,22 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
-  const action = formData.get("_action");
-  if (action === "upvote") {
+  const intent = formData.get("_action");
+  if (intent === "upvote") {
     const entryId = Number(formData.get("entryId"));
     await upvoteEntry(entryId);
-  } else if (action === "downvote") {
+  } else if (intent === "downvote") {
     const entryId = Number(formData.get("entryId"));
     await downvoteEntry(entryId);
-  } else if (action === "sort") {
+  } else if (intent === "sort") {
     const columnId = Number(formData.get("columnId"));
     await sortColumn(columnId);
-  } else if (action === "createColumn") {
+  } else if (intent === "createColumn") {
     const name = String(formData.get("name"));
     const boardId = Number(formData.get("boardId"));
     const order = Number(formData.get("order"));
     await createColumn(name, boardId, order);
-  } else if (action === "createEntry") {
+  } else if (intent === "createEntry") {
     let gifUrl: string | undefined = String(formData.get("gifUrl"));
     if (gifUrl === "") {
       gifUrl = undefined;
@@ -74,7 +74,7 @@ export async function action({ request }: Route.ActionArgs) {
       (await getDisplayName(request)) || ANONYMOUS_AUTHOR_DISPLAY_NAME;
 
     await createEntry(gifUrl, content, displayName, boardId, columnId, order);
-  } else if (action === "updateEntry") {
+  } else if (intent === "updateEntry") {
     let newGifUrl: string | undefined = String(formData.get("gifUrl"));
     if (newGifUrl === "") {
       newGifUrl = undefined;
@@ -83,7 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
     const entryId = Number(formData.get("entryId"));
 
     await updateEntry(entryId, newContent, newGifUrl);
-  } else if (action === "updateColumn") {
+  } else if (intent === "updateColumn") {
     const newName = String(formData.get("name"));
     const columnId = Number(formData.get("id"));
 
@@ -118,7 +118,7 @@ export default function Board() {
   useEffect(() => {
     void revalidator.revalidate();
     // Only revalidate when a new SSE event arrives.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [lastEntryId]);
 
   async function handleBoardIDCopyClick() {
@@ -439,10 +439,9 @@ function Entry({
     >
       <div className="flex flex-col gap-2 p-2">
         {gifUrl !== undefined ? (
-          // eslint-disable-next-line jsx-a11y/img-redundant-alt
           <img
             src={gifUrl}
-            alt="User-provided GIF or image URL"
+            alt="User-provided GIF"
             className="w-full rounded-lg"
           />
         ) : null}
@@ -548,7 +547,7 @@ function ColumnForm({
         name="name"
         placeholder="Name"
         defaultValue={currentName || ""}
-        // eslint-disable-next-line jsx-a11y/no-autofocus
+        // oxlint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         onKeyDown={(e) => {
           // Shift + Enter should add a new line, not submit the form.
@@ -661,15 +660,14 @@ function CardForm({
 
       <div className="flex flex-col gap-2 w-full p-2 rounded-xl bg-white border-2 border-stone-200 dark:bg-stone-700 dark:border-stone-600 focus-within:border-stone-400">
         {displayedGifUrl !== "" ? (
-          // eslint-disable-next-line jsx-a11y/img-redundant-alt
           <img
             src={displayedGifUrl}
-            alt="User-provided GIF or image URL"
+            alt="User-provided GIF"
             className="w-full rounded-lg"
           />
         ) : null}
         <textarea
-          // eslint-disable-next-line jsx-a11y/no-autofocus
+          // oxlint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           onFocus={moveCaretToTheEnd}
           name="content"
