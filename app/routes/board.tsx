@@ -147,7 +147,8 @@ export default function Board() {
   function handleCreateNewColumn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.currentTarget, { method: "post" });
+    // Commit fetcher.formData before unmounting the form (RR 8 uses startTransition).
+    fetcher.submit(e.currentTarget, { method: "post", flushSync: true });
 
     createNewColumnOnComplete();
   }
@@ -249,7 +250,8 @@ function Column({
   function handleCreateNewEntry(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.currentTarget, { method: "post" });
+    // Commit fetcher.formData before unmounting the form (RR 8 uses startTransition).
+    fetcher.submit(e.currentTarget, { method: "post", flushSync: true });
 
     createNewEntryOnComplete();
   }
@@ -264,7 +266,8 @@ function Column({
   function handleUpdateColumn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.currentTarget, { method: "post" });
+    // Commit fetcher.formData before leaving edit mode (RR 8 uses startTransition).
+    fetcher.submit(e.currentTarget, { method: "post", flushSync: true });
 
     updateColumnOnComplete();
   }
@@ -423,7 +426,8 @@ function Entry({
   function handleEditEntry(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    fetcher.submit(e.currentTarget, { method: "post" });
+    // Commit fetcher.formData before leaving edit mode (RR 8 uses startTransition).
+    fetcher.submit(e.currentTarget, { method: "post", flushSync: true });
 
     editEntryOnComplete();
   }
