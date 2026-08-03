@@ -1,6 +1,7 @@
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import {
   useFetcher,
+  useFetchers,
   useLoaderData,
   useRevalidator,
 } from "react-router";
@@ -112,10 +113,21 @@ export default function Board() {
     entries.length === 0 ? 0 : entries[entries.length - 1].columnOrder + 1;
 
   const revalidator = useRevalidator();
+  const fetchers = useFetchers();
   const lastEntryId = useEventSource(`/boards/${id}/subscribe`, {
     event: "board-update",
   });
   useEffect(() => {
+    // Ignore the initial null from useEventSource before any event arrives.
+    if (lastEntryId == null) return;
+
+    // This tab's fetcher submissions already revalidate. Calling revalidate()
+    // again while a fetcher is in-flight clears fetcher.formData in RR 8
+    // (getLoadingFetcher(undefined)), which flashes away optimistic UI before
+    // the new loader data lands. Other tabs still pick up the SSE event when
+    // their fetchers are idle.
+    if (fetchers.some((f) => f.state !== "idle")) return;
+
     void revalidator.revalidate();
     // Only revalidate when a new SSE event arrives.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
