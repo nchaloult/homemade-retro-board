@@ -52,12 +52,12 @@ export default function CreateBoard() {
             placeholder="Name"
             // oxlint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
-            className="p-2 rounded-lg font-semibold border-2 border-stone-200 outline-none dark:bg-stone-700 dark:border-stone-600 dark:placeholder:text-stone-400 focus:border-stone-400 transition"
+            className="p-2 rounded-lg bg-white font-semibold border-2 border-stone-200 outline-none dark:bg-stone-700 dark:border-stone-600 dark:placeholder:text-stone-400 focus:border-stone-400 transition"
           />
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[0_4px_rgb(59_7_100)] outline-none dark:bg-purple-600 dark:border-purple-900 dark:shadow-[0_4px_rgb(88_28_135)] hover:bg-purple-700 hover:shadow-[0_8px_rgb(59_7_100)] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[0_8px_rgb(88_28_135)] focus:bg-purple-700 focus:shadow-[0_8px_rgb(59_7_100)] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[0_8px_rgb(88_28_135)] active:shadow-[0_4px_rgb(59_7_100)] active:translate-y-0 dark:active:shadow-[0_4px_rgb(88_28_135)] disabled:translate-y-0 disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[0_4px_rgb(214_211_209)] transition"
+            className="px-4 py-2 rounded-lg bg-purple-800 text-white font-semibold border-2 border-purple-950 shadow-[0_4px_rgb(59_7_100)] outline-none cursor-pointer dark:bg-purple-600 dark:border-purple-900 dark:shadow-[0_4px_rgb(88_28_135)] hover:bg-purple-700 hover:shadow-[0_8px_rgb(59_7_100)] hover:-translate-y-1 dark:hover:bg-purple-500 dark:hover:shadow-[0_8px_rgb(88_28_135)] focus:bg-purple-700 focus:shadow-[0_8px_rgb(59_7_100)] focus:-translate-y-1 dark:focus:bg-purple-500 dark:focus:shadow-[0_8px_rgb(88_28_135)] active:shadow-[0_4px_rgb(59_7_100)] active:translate-y-0 dark:active:shadow-[0_4px_rgb(88_28_135)] disabled:translate-y-0 disabled:cursor-default disabled:bg-stone-200 disabled:text-stone-900 disabled:border-stone-300 disabled:shadow-[0_4px_rgb(214_211_209)] transition"
           >
             {isSubmitting ? "Creating..." : "Create"}
           </button>

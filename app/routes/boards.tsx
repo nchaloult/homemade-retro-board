@@ -50,7 +50,7 @@ function BoardCard(props: BoardCardProps) {
   return (
     <Link
       to={`${props.externalId}`}
-      className={`flex flex-col gap-4 justify-between p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[0_4px_rgb(231_229_228)] dark:bg-stone-600 dark:border-stone-700 hover:dark:shadow-[0_4px_rgb(68_64_60)] outline-none hover:scale-105 ${
+      className={`flex flex-col gap-4 justify-between p-4 rounded-xl bg-white border-2 border-stone-200 hover:shadow-[0_4px_rgb(231_229_228)] dark:bg-stone-600 dark:border-stone-700 hover:dark:shadow-[0_4px_rgb(68_64_60)] outline-none cursor-pointer hover:scale-105 ${
         isRotatedClockwise ? "hover:rotate-1" : "hover:-rotate-1"
       } active:scale-100 active:rotate-0 transition`}
       onMouseEnter={() => randomizeRotationDirection()}
